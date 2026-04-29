@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
-import 'package:fork_up/presentation/screens/home.dart';
+import 'package:fork_up/presentation/home/screens/home.dart';
 class Root extends StatefulWidget {
   const Root({super.key});
 

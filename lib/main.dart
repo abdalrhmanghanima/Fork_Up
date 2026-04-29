@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fork_up/core/di/di.dart';
 import 'package:fork_up/core/routing/app_routes.dart';
-import 'package:fork_up/presentation/screens/root.dart';
+import 'package:fork_up/presentation/home/cubit/home_cubit.dart';
+import 'package:fork_up/presentation/root.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await init();
   runApp(const MyApp());
 }
 
@@ -11,10 +16,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.root,
-      routes: {AppRoutes.root: (_) => const Root()},
+    return BlocProvider(
+      create: (_) => sl<HomeCubit>()..getHomeData(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        initialRoute: AppRoutes.root,
+        routes: {AppRoutes.root: (_) => const Root()},
+      ),
     );
   }
 }
