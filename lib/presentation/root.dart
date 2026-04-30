@@ -66,7 +66,7 @@ class _RootState extends State<Root> {
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: SvgPicture.asset(AppIcons.cart,
+                icon: SvgPicture.asset(AppIcons.mdiCart,
                   colorFilter: ColorFilter.mode(
                     currentScreen == 1 ? AppColors.yellow : AppColors.gray,
                     BlendMode.srcIn,

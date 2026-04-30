@@ -5,6 +5,8 @@ import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
 import 'package:fork_up/presentation/home/cubit/home_cubit.dart';
 import 'package:fork_up/presentation/home/cubit/home_state.dart';
+import 'package:fork_up/presentation/home/widgets/horizontal_list_widget.dart';
+import 'package:fork_up/presentation/product_details/screen/product_details_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -33,10 +35,9 @@ class HomeScreen extends StatelessWidget {
                   Stack(
                     children: [
                       Container(
-                        height: 200,
+                        height: 230,
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
                           image: DecorationImage(
                             image: NetworkImage(data.data.bannerImage),
                             fit: BoxFit.cover,
@@ -121,94 +122,7 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 12),
-                    child: SizedBox(
-                      height: 240,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: data.data.bestSellers.length,
-                        itemBuilder: (context, index) {
-                          final product = data.data.bestSellers[index];
-                          return Container(
-                            margin: EdgeInsets.only(right: 12),
-                            width: 152,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Column(
-                              children: [
-                                Stack(
-                                  children: [
-                                    Container(
-                                      height: 120,
-                                      width: 147,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20),
-                                        image: DecorationImage(
-                                          image: NetworkImage(
-                                            product.thumbnail,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      right: 16,
-                                      top: 11,
-                                      child: SvgPicture.asset(AppIcons.like),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 8),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        product.name,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        softWrap: true,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(width: 4),
-                                    SvgPicture.asset(AppIcons.more, width: 16),
-                                  ],
-                                ),
-                                SizedBox(height: 6),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 55),
-                                  child: Text(
-                                    "\$ ${product.priceBeforeDiscount}",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.yellow,
-                                    ),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 6),
-                                      child: SvgPicture.asset(AppIcons.add),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
+                  ProductHorizontalList(products: data.data.bestSellers),
                   SizedBox(height: 13),
                   Padding(
                     padding: const EdgeInsets.only(left: 35),
@@ -231,44 +145,47 @@ class HomeScreen extends StatelessWidget {
                         itemCount: data.data.categories.length,
                         itemBuilder: (context, index) {
                           final category = data.data.categories[index];
-                          return Container(
-                            width: 140,
-                            margin: EdgeInsets.only(right: 12),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  height: 120,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(16),
-                                    ),
-                                    image: DecorationImage(
-                                      image: NetworkImage(category.icon),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-
-                                SizedBox(height: 12),
-
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 25),
-                                  child: Text(
-                                    category.name,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.blue,
+                          return GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              width: 140,
+                              margin: EdgeInsets.only(right: 12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    height: 120,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(16),
+                                      ),
+                                      image: DecorationImage(
+                                        image: NetworkImage(category.icon),
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+
+                                  SizedBox(height: 12),
+
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 25),
+                                    child: Text(
+                                      category.name,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.blue,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },
@@ -305,93 +222,30 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 12),
-                    child: SizedBox(
-                      height: 245,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: data.data.newArrivalProducts.length,
-                        itemBuilder: (context, index) {
-                          final arrivals = data.data.newArrivalProducts[index];
-                          return Container(
-                            margin: EdgeInsets.only(right: 12),
-                            width: 158,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Column(
-                              children: [
-                                Stack(
-                                  children: [
-                                    Container(
-                                      height: 130,
-                                      width: 150,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20),
-                                        image: DecorationImage(
-                                          image: NetworkImage(
-                                            arrivals.images[0],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      right: 16,
-                                      top: 11,
-                                      child: SvgPicture.asset(AppIcons.like),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 8),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        arrivals.name,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    SizedBox(width: 4),
-                                    SvgPicture.asset(AppIcons.more, width: 16),
-                                  ],
-                                ),
-                                SizedBox(height: 6),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 55),
-                                  child: Text(
-                                    "\$ ${arrivals.priceBeforeDiscount}",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.yellow,
-                                    ),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 6),
-                                      child: SvgPicture.asset(AppIcons.add),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(
+                        'New Arrival Products',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
+                      SizedBox(width: 20),
+                      Text(
+                        'See All',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.yellow,
+                        ),
+                      ),
+                    ],
                   ),
+                  SizedBox(height: 20),
+                  ProductHorizontalList(products: data.data.newArrivalProducts),
                   SizedBox(height: 24),
                   Padding(
                     padding: const EdgeInsets.only(left: 12),
@@ -416,6 +270,26 @@ class HomeScreen extends StatelessWidget {
                                         image: DecorationImage(
                                           image: NetworkImage(offer.url),
                                           fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 140,
+                                      width: 350,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            Colors.transparent,
+                                            Colors.black.withValues(
+                                              alpha: 0.7,
+                                              red: 0.6,
+                                              green: 0.6,
+                                              blue: 0.6,
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),

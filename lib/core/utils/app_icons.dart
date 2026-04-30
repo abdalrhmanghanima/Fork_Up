@@ -1,6 +1,6 @@
 class AppIcons{
   static const String home="assets/icons/home.svg";
-  static const String cart="assets/icons/mdi_cart.svg";
+  static const String mdiCart="assets/icons/mdi_cart.svg";
   static const String box="assets/icons/box-package-icon 1.svg";
   static const String menu="assets/icons/menu.svg";
   static const String search="assets/icons/Search.svg";
@@ -8,4 +8,8 @@ class AppIcons{
   static const String like="assets/icons/Like.svg";
   static const String more="assets/icons/more.svg";
   static const String add="assets/icons/add.svg";
+  static const String back="assets/icons/back.svg";
+  static const String share="assets/icons/share.svg";
+  static const String plus="assets/icons/plus.svg";
+  static const String cartWhite="assets/icons/cart_white.svg";
 }
