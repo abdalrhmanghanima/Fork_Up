@@ -1,7 +1,6 @@
 import 'package:fork_up/data/home/model/data_model.dart';
 import 'package:fork_up/domain/home/entity/data_entity.dart';
 import 'category_mapper.dart';
-import 'product_mapper.dart';
 import 'partner_mapper.dart';
 import 'offer_mapper.dart';
 

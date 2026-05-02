@@ -6,7 +6,6 @@ import 'package:fork_up/core/utils/app_icons.dart';
 import 'package:fork_up/presentation/home/cubit/home_cubit.dart';
 import 'package:fork_up/presentation/home/cubit/home_state.dart';
 import 'package:fork_up/presentation/home/widgets/horizontal_list_widget.dart';
-import 'package:fork_up/presentation/product_details/screen/product_details_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});

@@ -12,4 +12,6 @@ class AppIcons{
   static const String share="assets/icons/share.svg";
   static const String plus="assets/icons/plus.svg";
   static const String cartWhite="assets/icons/cart_white.svg";
+  static const String plusRounded="assets/icons/plus_rounded.svg";
+  static const String minusRounded="assets/icons/minus_rounded.svg";
 }
