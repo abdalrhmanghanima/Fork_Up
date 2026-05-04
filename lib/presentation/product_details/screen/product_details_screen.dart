@@ -4,7 +4,10 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
-import 'package:fork_up/presentation/home/widgets/horizontal_list_widget.dart';
+import 'package:fork_up/domain/product_details/entity/mapper/product_details_mapper.dart';
+import 'package:fork_up/domain/product_details/entity/product_details_entity.dart';
+import 'package:fork_up/presentation/cart/cubit/cart_cubit.dart';
+import 'package:fork_up/presentation/shared/widgets/horizontal_list_widget.dart';
 import 'package:fork_up/presentation/product_details/cubit/product_cubit.dart';
 import 'package:fork_up/presentation/product_details/cubit/product_state.dart';
 import 'package:fork_up/presentation/product_details/widgets/product_image_slider.dart';
@@ -13,13 +16,15 @@ import 'package:fork_up/presentation/shared/cubit/recently_viewed_cubit.dart';
 import 'package:fork_up/presentation/shared/cubit/recently_viewed_state.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
-  const ProductDetailsScreen({super.key});
+  const ProductDetailsScreen({super.key,});
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
 }
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+  int quantity = 1;
+
   @override
   void initState() {
     super.initState();
@@ -468,6 +473,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           return SizedBox();
                         }
                         return ProductHorizontalList(
+                          scrollDirection: Axis.horizontal,
                           products: recentState.products,
                         );
                       },
@@ -484,90 +490,125 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         },
       ),
 
-      bottomNavigationBar: LayoutBuilder(
-        builder: (context, constraints) {
-          final width = constraints.maxWidth;
+      bottomNavigationBar: BlocBuilder<ProductDetailsCubit, ProductState>(
+        builder: (context, state) {
+          if (state is ProductLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-          return Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: width * 0.08,
-              vertical: width * 0.07,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 12,
-                  color: Colors.black.withOpacity(0.08),
-                  offset: Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: width * 0.03),
-                  child: SvgPicture.asset(
-                    AppIcons.minusRounded,
-                    height: width * 0.1,
-                    width: width * 0.1,
+          if (state is ProductError) {
+            return Center(child: Text(state.message));
+          }
+          if (state is ProductSuccess) {
+            final productDetails = state.product;
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth;
+
+                return Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: width * 0.08,
+                    vertical: width * 0.07,
                   ),
-                ),
-
-                SizedBox(width: width * 0.03),
-
-                Text(
-                  "4",
-                  style: TextStyle(
-                    fontSize: width * 0.06,
-                    fontWeight: FontWeight.w600,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 12,
+                        color: Colors.black.withOpacity(0.08),
+                        offset: Offset(0, -2),
+                      ),
+                    ],
                   ),
-                ),
-
-                SizedBox(width: width * 0.03),
-
-                SvgPicture.asset(
-                  AppIcons.plusRounded,
-                  height: width * 0.1,
-                  width: width * 0.1,
-                ),
-
-                Spacer(),
-
-                Expanded(
-                  flex: 3,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.blue,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        vertical: width * 0.04,
-                        horizontal: width * 0.06,
-                      ),
-                    ),
-                    onPressed: () {},
-                    icon: SvgPicture.asset(
-                      AppIcons.cartWhite,
-                      height: width * 0.05,
-                    ),
-                    label: FittedBox(
-                      child: Text(
-                        "Add to Cart",
-                        style: TextStyle(
-                          fontSize: width * 0.06,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            if (quantity > 1) quantity--;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          child:  SvgPicture.asset(AppIcons.minusRounded,height: 25,width: 25,),
                         ),
                       ),
-                    ),
+
+                      const SizedBox(width: 12),
+                      Text(
+                        quantity.toString(),
+                        style: const TextStyle(fontSize: 18),
+                      ),
+
+                      const SizedBox(width: 12),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            quantity++;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          child: SvgPicture.asset(AppIcons.plusRounded,height: 25,width: 25,),
+                        ),
+                      ),
+                      Spacer(),
+
+                      Expanded(
+                        flex: 4,
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.blue,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              vertical: width * 0.04,
+                              horizontal: width * 0.08,
+                            ),
+                          ),
+                          onPressed: () async{
+                           await context.read<CartCubit>().addToCart(productDetails.toProduct(),quantity: quantity);
+                           ScaffoldMessenger.of(context).showSnackBar(
+                             SnackBar(
+                               content: Text('Product added to cart'),
+                               backgroundColor: Colors.green,
+                               duration: Duration(seconds: 2),
+                             ),
+                           );
+                          },
+                          icon: SvgPicture.asset(
+                            AppIcons.cartWhite,
+                            height: width * 0.05,
+                          ),
+                          label: FittedBox(
+                            child: Text(
+                              "Add to Cart",
+                              style: TextStyle(
+                                fontSize: width * 0.04,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          );
+                );
+              },
+            );
+          }
+          return SizedBox.shrink();
         },
       ),
     );

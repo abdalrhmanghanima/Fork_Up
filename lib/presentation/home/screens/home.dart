@@ -5,7 +5,7 @@ import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
 import 'package:fork_up/presentation/home/cubit/home_cubit.dart';
 import 'package:fork_up/presentation/home/cubit/home_state.dart';
-import 'package:fork_up/presentation/home/widgets/horizontal_list_widget.dart';
+import 'package:fork_up/presentation/shared/widgets/horizontal_list_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -121,7 +121,9 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 20),
-                  ProductHorizontalList(products: data.data.bestSellers),
+                  ProductHorizontalList(
+                      scrollDirection: Axis.horizontal,
+                      products: data.data.bestSellers),
                   SizedBox(height: 13),
                   Padding(
                     padding: const EdgeInsets.only(left: 35),
@@ -244,7 +246,9 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 20),
-                  ProductHorizontalList(products: data.data.newArrivalProducts),
+                  ProductHorizontalList(
+                      scrollDirection: Axis.horizontal,
+                      products: data.data.newArrivalProducts),
                   SizedBox(height: 24),
                   Padding(
                     padding: const EdgeInsets.only(left: 12),

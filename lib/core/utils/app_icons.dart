@@ -14,4 +14,7 @@ class AppIcons{
   static const String cartWhite="assets/icons/cart_white.svg";
   static const String plusRounded="assets/icons/plus_rounded.svg";
   static const String minusRounded="assets/icons/minus_rounded.svg";
+  static const String delete="assets/icons/delete.svg";
+  static const String searchDark="assets/icons/search_dark.svg";
+  static const String icon="assets/icons/Icon.svg";
 }

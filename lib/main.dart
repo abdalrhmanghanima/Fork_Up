@@ -4,6 +4,7 @@ import 'package:fork_up/core/di/di.dart';
 import 'package:fork_up/core/routing/app_routes.dart';
 import 'package:fork_up/domain/recently_viewed/use_case/add_product.dart';
 import 'package:fork_up/domain/recently_viewed/use_case/get_recently_products.dart';
+import 'package:fork_up/presentation/cart/cubit/cart_cubit.dart';
 import 'package:fork_up/presentation/home/cubit/home_cubit.dart';
 import 'package:fork_up/presentation/root.dart';
 import 'package:fork_up/presentation/shared/cubit/recently_viewed_cubit.dart';
@@ -29,6 +30,9 @@ class MyApp extends StatelessWidget {
               sl<GetRecentlyViewedUseCase>(),
               sl<AddRecentlyViewedUseCase>(),
           )..load(),
+        ),
+        BlocProvider(
+          create: (_) => sl<CartCubit>(),
         ),
       ],
       child: MaterialApp(
