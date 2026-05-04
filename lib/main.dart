@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fork_up/core/di/di.dart';
@@ -8,9 +9,15 @@ import 'package:fork_up/presentation/cart/cubit/cart_cubit.dart';
 import 'package:fork_up/presentation/home/cubit/home_cubit.dart';
 import 'package:fork_up/presentation/root.dart';
 import 'package:fork_up/presentation/shared/cubit/recently_viewed_cubit.dart';
-
+final Dio dio = Dio();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  dio.interceptors.add(LogInterceptor(
+    request: true,
+    requestBody: true,
+    responseBody: true,
+    error: true,
+  ));
   await init();
   runApp(const MyApp());
 }

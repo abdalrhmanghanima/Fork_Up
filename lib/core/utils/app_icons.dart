@@ -17,4 +17,6 @@ class AppIcons{
   static const String delete="assets/icons/delete.svg";
   static const String searchDark="assets/icons/search_dark.svg";
   static const String icon="assets/icons/Icon.svg";
+  static const String sort="assets/icons/sort.svg";
+  static const String filter="assets/icons/filter.svg";
 }

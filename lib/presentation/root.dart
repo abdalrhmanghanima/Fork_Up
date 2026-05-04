@@ -3,7 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
 import 'package:fork_up/presentation/cart/screens/cart_screen.dart';
-import 'package:fork_up/presentation/home/screens/home.dart';
+import 'package:fork_up/presentation/home/screens/home_screen.dart';
+import 'package:fork_up/presentation/whole_sale/screen/whole_sale_screen.dart';
 class Root extends StatefulWidget {
   const Root({super.key});
 
@@ -17,7 +18,8 @@ class _RootState extends State<Root> {
 
   final List<Widget> screens = [
     HomeScreen(),
-    CartScreen()
+    CartScreen(),
+    WholeSaleScreen(),
 
   ];
 

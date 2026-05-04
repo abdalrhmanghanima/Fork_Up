@@ -17,6 +17,7 @@ import 'package:fork_up/presentation/product_details/cubit/product_cubit.dart';
 import 'package:fork_up/presentation/product_details/screen/product_details_screen.dart';
 import 'package:fork_up/presentation/shared/cubit/recently_viewed_cubit.dart';
 import 'package:fork_up/presentation/shared/widgets/horizontal_list_widget.dart';
+import 'package:fork_up/presentation/shared/widgets/product_grid_widget.dart';
 
 class SearchViewWidget extends StatefulWidget {
   const SearchViewWidget({super.key});
@@ -28,6 +29,11 @@ class SearchViewWidget extends StatefulWidget {
 class _SearchViewWidgetState extends State<SearchViewWidget> {
   Timer? _debounce;
 
+  @override
+  void initState() {
+    super.initState();
+    context.read<SearchCubit>().initProducts();
+  }
   @override
   void dispose() {
     _debounce?.cancel();
@@ -103,117 +109,112 @@ class _SearchViewWidgetState extends State<SearchViewWidget> {
             ),
             SizedBox(height: 10),
             Expanded(
-              child: BlocBuilder<SearchCubit, SearchState>(
-                builder: (context, state) {
-                  if (state is SearchLoading) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  if (state is SearchError) {
-                    return Center(child: Text("Error"));
-                  }
-                  if (state is SearchEmpty) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 24,),
-                      child: Center(
-                        child: Column(
-                          children: [
-                            Image.asset(AppImages.illustration),
-                            SizedBox(height: 20),
-                            Text(
-                              "We couldn't find any result!",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(height: 12),
-                            Text(
-                              "The product you are trying to search for is not\ncurrently available, We selected some other\noptions that you may like",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                color: AppColors.lightGray,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 20,bottom: 12),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'Recently Viewed',
-                                    style: TextStyle(
-                                      fontSize: width * 0.04,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            BlocBuilder<HomeCubit, HomeState>(
-                              builder: (context, state) {
-                                if (state is HomeLoading) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-                                if (state is HomeSuccess) {
-                                  final bestSellers = state.data.data.bestSellers;
-                                  return Column(
-                                    children: [
-                                      ProductHorizontalList(
-                                        scrollDirection: Axis.horizontal,
-                                        products: bestSellers,
-                                      ),
-                                    ],
-                                  );
-                                }
-                                return SizedBox.shrink();
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                  if (state is SearchLoaded) {
-                    return GridView.builder(
-                      itemCount: state.results.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 0.75,
-                      ),
-                      itemBuilder: (context, index) {
-                        final product = state.results[index];
-                        return ProductCard(
-                          onAdd: () {
-                            context.read<CartCubit>().addToCart(product);
-                          },
-                          image: product.thumbnail,
-                          name: product.name,
-                          price: product.priceAfterDiscount,
-                          onTap: () {
-                            context.read<RecentlyViewedCubit>().add(product);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => BlocProvider(
-                                  create: (_) =>
-                                      sl<ProductDetailsCubit>()
-                                        ..getProductDetails(product.slug),
-                                  child:  ProductDetailsScreen(),
+              child: SingleChildScrollView(
+                child: BlocBuilder<SearchCubit, SearchState>(
+                  builder: (context, state) {
+                    if (state is SearchLoading) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    if (state is SearchError) {
+                      return Center(child: Text("Error"));
+                    }
+                    if (state is SearchEmpty) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 24,),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Image.asset(AppImages.illustration),
+                              SizedBox(height: 20),
+                              Text(
+                                "We couldn't find any result!",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
-                            );
-                          },
-                        );
-                      },
-                    );
-                  }
-                  return SizedBox.shrink();
-                },
+                              SizedBox(height: 12),
+                              Text(
+                                "The product you are trying to search for is not\ncurrently available, We selected some other\noptions that you may like",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.lightGray,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20,bottom: 12),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Recently Viewed',
+                                      style: TextStyle(
+                                        fontSize: width * 0.04,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              BlocBuilder<HomeCubit, HomeState>(
+                                builder: (context, state) {
+                                  if (state is HomeLoading) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  if (state is HomeSuccess) {
+                                    final bestSellers = state.data.data.bestSellers;
+                                    return Column(
+                                      children: [
+                                        ProductHorizontalList(
+                                          scrollDirection: Axis.horizontal,
+                                          products: bestSellers,
+                                        ),
+                                      ],
+                                    );
+                                  }
+                                  return SizedBox.shrink();
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                    if (state is SearchLoaded) {
+                      return ProductGridWidget(
+                        items: state.results,
+
+                        image: (product) => product.thumbnail,
+                        name: (product) => product.name,
+                        price: (product) => product.priceAfterDiscount,
+
+                        onAdd: (product) {
+                          context.read<CartCubit>().addToCart(product);
+                        },
+
+                        onTap: (product) {
+                          context.read<RecentlyViewedCubit>().add(product);
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => BlocProvider(
+                                create: (_) =>
+                                sl<ProductDetailsCubit>()
+                                  ..getProductDetails(product.slug),
+                                child: ProductDetailsScreen(),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }
+                    return SizedBox.shrink();
+                  },
+                ),
               ),
             ),
           ],
