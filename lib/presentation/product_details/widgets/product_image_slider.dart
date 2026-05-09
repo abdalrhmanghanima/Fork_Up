@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:fork_up/core/utils/app_icons.dart';
+import 'package:fork_up/domain/product_details/entity/mapper/product_details_mapper.dart';
+import 'package:fork_up/domain/product_details/entity/product_details_entity.dart';
+import 'package:fork_up/presentation/wish_list/cubit/wish_list_cubit.dart';
 
 class ProductImagesSlider extends StatefulWidget {
+  final ProductDetailsEntity product;
+
   final List<String> images;
 
-  const ProductImagesSlider({super.key, required this.images});
+  const ProductImagesSlider({super.key, required this.images,required this.product});
 
   @override
   State<ProductImagesSlider> createState() => _ProductImagesSliderState();
 }
 
 class _ProductImagesSliderState extends State<ProductImagesSlider> {
+
   int currentIndex = 0;
   final PageController controller = PageController();
 
@@ -44,9 +53,30 @@ class _ProductImagesSliderState extends State<ProductImagesSlider> {
         Positioned(
           top: 10,
           right: 10,
-          child: CircleAvatar(
-            backgroundColor: Colors.white,
-            child: Icon(Icons.favorite, color: Colors.red),
+          child: GestureDetector(
+            onTap: () {
+              final isExist = context
+                  .read<WishlistCubit>()
+                  .isInWishlist(widget.product.toProduct());
+              context.read<WishlistCubit>().toggle(
+                widget.product.toProduct(),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      isExist
+                          ? 'Removed from wishlist'
+                          : 'Added to wishlist',
+                    ),
+                    duration: Duration(seconds: 1),
+                  )
+              );
+            },
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: context.watch<WishlistCubit>().isInWishlist(widget.product.toProduct())
+                  ? SvgPicture.asset(AppIcons.likeFilled)
+                  : SvgPicture.asset(AppIcons.like)),
           ),
         ),
 

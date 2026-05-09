@@ -35,6 +35,8 @@ import 'package:fork_up/data/whole_sale/data_source/get_products_remote_data_sou
     as _i976;
 import 'package:fork_up/data/whole_sale/repository/get_products_repo_impl.dart'
     as _i231;
+import 'package:fork_up/data/wish_list/repository/wish_list_repo_impl.dart'
+    as _i929;
 import 'package:fork_up/domain/cart/repository/cart_repo.dart' as _i978;
 import 'package:fork_up/domain/cart/use_case/add_to_cart_use_case.dart'
     as _i716;
@@ -61,15 +63,26 @@ import 'package:fork_up/domain/whole_sale/repository/get_products_repo.dart'
     as _i147;
 import 'package:fork_up/domain/whole_sale/use_case/get_products_use_case.dart'
     as _i64;
+import 'package:fork_up/domain/wish_list/repository/wish_list_repo.dart'
+    as _i970;
+import 'package:fork_up/domain/wish_list/use_case/clear_wish_list_use_case.dart'
+    as _i195;
+import 'package:fork_up/domain/wish_list/use_case/get_wish_list_use_case.dart'
+    as _i708;
+import 'package:fork_up/domain/wish_list/use_case/toggle_wish_list_use_case.dart'
+    as _i403;
 import 'package:fork_up/presentation/cart/cubit/cart_cubit.dart' as _i628;
 import 'package:fork_up/presentation/cart/cubit/search_cubit.dart' as _i1043;
 import 'package:fork_up/presentation/home/cubit/home_cubit.dart' as _i700;
+import 'package:fork_up/presentation/menu/cubit/navigation_cubit.dart' as _i179;
 import 'package:fork_up/presentation/product_details/cubit/product_cubit.dart'
     as _i535;
 import 'package:fork_up/presentation/shared/cubit/recently_viewed_cubit.dart'
     as _i674;
 import 'package:fork_up/presentation/whole_sale/cubit/whole_sale_cubit.dart'
     as _i666;
+import 'package:fork_up/presentation/wish_list/cubit/wish_list_cubit.dart'
+    as _i268;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
@@ -86,6 +99,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.prefs(),
       preResolve: true,
     );
+    gh.factory<_i179.NavigationCubit>(() => _i179.NavigationCubit());
     gh.lazySingleton<_i361.Dio>(() => registerModule.dio());
     gh.lazySingleton<_i911.ProductDetailsRemoteDataSource>(
       () => _i448.ProductDetailsRemoteDataSourceImpl(gh<_i361.Dio>()),
@@ -94,6 +108,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i725.HomeRemoteDataSourceImpl(gh<_i361.Dio>()),
     );
     gh.lazySingleton<_i978.CartRepository>(() => _i850.CartRepositoryImpl());
+    gh.lazySingleton<_i970.WishListRepo>(() => _i929.WishListRepositoryImpl());
     gh.lazySingleton<_i136.GetProductsRemoteDataSource>(
       () => _i976.GetProductsRemoteDataSourceImpl(gh<_i361.Dio>()),
     );
@@ -123,6 +138,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i255.SearchUseCase>(
       () => _i255.SearchUseCase(gh<_i147.GetProductsRepo>()),
     );
+    gh.lazySingleton<_i195.ClearWishListUseCase>(
+      () => _i195.ClearWishListUseCase(gh<_i970.WishListRepo>()),
+    );
+    gh.lazySingleton<_i708.GetWishListUseCase>(
+      () => _i708.GetWishListUseCase(gh<_i970.WishListRepo>()),
+    );
+    gh.lazySingleton<_i403.ToggleWishListUseCase>(
+      () => _i403.ToggleWishListUseCase(gh<_i970.WishListRepo>()),
+    );
     gh.lazySingleton<_i716.AddToCartUseCase>(
       () => _i716.AddToCartUseCase(gh<_i978.CartRepository>()),
     );
@@ -142,6 +166,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i64.GetProductsUseCase>(
       () => _i64.GetProductsUseCase(gh<_i147.GetProductsRepo>()),
+    );
+    gh.factory<_i268.WishlistCubit>(
+      () => _i268.WishlistCubit(
+        gh<_i708.GetWishListUseCase>(),
+        gh<_i403.ToggleWishListUseCase>(),
+      ),
     );
     gh.factory<_i700.HomeCubit>(
       () => _i700.HomeCubit(gh<_i567.GetHomeDataUseCase>()),

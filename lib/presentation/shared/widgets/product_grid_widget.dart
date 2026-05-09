@@ -9,7 +9,10 @@ class ProductGridWidget<T> extends StatelessWidget {
   final double Function(T item) price;
   final void Function(T item)? onTap;
   final void Function(T item)? onAdd;
+  final void Function(T item)? onLike;
   final ScrollController? controller;
+  final Widget Function(T item) favourite;
+  final Widget Function(T item) add;
 
   const ProductGridWidget({
     super.key,
@@ -20,6 +23,7 @@ class ProductGridWidget<T> extends StatelessWidget {
     this.onTap,
     this.onAdd,
     this.controller,
+    required this.favourite, this.onLike, required this.add,
   });
 
   @override
@@ -38,10 +42,12 @@ class ProductGridWidget<T> extends StatelessWidget {
         final item = items[index];
 
         return ProductCard(
+          favourite: favourite.call(item),
           image: image(item),
           name: name(item),
           price: price(item),
-
+          add: add.call(item),
+          onLike: ()=> onLike?.call(item),
           onAdd: () => onAdd?.call(item),
           onTap: () => onTap?.call(item),
         );

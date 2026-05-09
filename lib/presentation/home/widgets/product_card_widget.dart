@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProductCard extends StatelessWidget {
   final String image;
@@ -10,6 +11,8 @@ class ProductCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onAdd;
   final VoidCallback? onLike;
+  final Widget favourite;
+  final Widget add;
 
   const ProductCard({
     super.key,
@@ -19,12 +22,13 @@ class ProductCard extends StatelessWidget {
     required this.onTap,
     this.onAdd,
     this.onLike,
+    required this.favourite,
+    required this.add,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(right: 12),
         width: 152,
@@ -36,14 +40,28 @@ class ProductCard extends StatelessWidget {
           children: [
             Stack(
               children: [
-                Container(
-                  height: 120,
-                  width: 147,
-                  decoration: BoxDecoration(
+                GestureDetector(
+                  onTap: onTap,
+                  child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    image: DecorationImage(
-                      image: NetworkImage(image),
-                      fit: BoxFit.cover,
+                    child: SizedBox(
+                      height: 120,
+                      width: 147,
+                      child: CachedNetworkImage(
+                        imageUrl: image,
+                        fit: BoxFit.cover,
+
+                        fadeInDuration: Duration.zero,
+                        fadeOutDuration: Duration.zero,
+
+                        placeholder: (context, url) =>
+                            Container(
+                              color: Colors.grey.shade200,
+                            ),
+
+                        errorWidget: (context, url, error) =>
+                            Icon(Icons.image_not_supported),
+                      ),
                     ),
                   ),
                 ),
@@ -52,7 +70,7 @@ class ProductCard extends StatelessWidget {
                   top: 11,
                   child: GestureDetector(
                     onTap: onLike,
-                    child: SvgPicture.asset(AppIcons.like),
+                    child: favourite,
                   ),
                 ),
               ],
@@ -75,7 +93,7 @@ class ProductCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 4),
-                SvgPicture.asset(AppIcons.more, width: 16),
+                SvgPicture.asset(AppIcons.more, width: 27),
               ],
             ),
 
@@ -101,7 +119,7 @@ class ProductCard extends StatelessWidget {
                 onTap: onAdd,
                 child: Padding(
                   padding: const EdgeInsets.only(right: 6),
-                  child: SvgPicture.asset(AppIcons.add),
+                  child: add,
                 ),
               ),
             ),

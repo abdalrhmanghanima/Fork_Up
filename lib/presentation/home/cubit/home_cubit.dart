@@ -11,9 +11,7 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       final result = await useCase();
       emit(HomeSuccess(result));
-    } catch (e, s) {
-      print("🔥 ERROR: $e");
-      print("🔥 STACK: $s");
+    } catch (e) {
       emit(HomeError(e.toString()));
     }
   }

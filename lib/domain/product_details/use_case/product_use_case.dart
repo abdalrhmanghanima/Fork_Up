@@ -9,7 +9,6 @@ class GetProductDetailsUseCase {
   GetProductDetailsUseCase(this.productRepo);
 
   Future<ProductDetailsEntity> call(String slug) {
-    print("🧠 USECASE CALLED WITH: $slug");
     return productRepo.getProductDetails(slug);
   }
 }

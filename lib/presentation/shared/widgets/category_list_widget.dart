@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/domain/home/entity/category_entity.dart';
@@ -34,16 +35,27 @@ class CategoryListWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    height: 120,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(16),
-                      ),
-                      image: DecorationImage(
-                        image: NetworkImage(category.icon),
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
+                    child: SizedBox(
+                      height: 120,
+                      width: double.infinity,
+                      child: CachedNetworkImage(
+                        imageUrl: category.icon,
                         fit: BoxFit.cover,
+
+                        fadeInDuration: Duration.zero,
+                        fadeOutDuration: Duration.zero,
+
+                        placeholder: (context, url) =>
+                            Container(
+                              color: Colors.grey.shade200,
+                            ),
+
+                        errorWidget: (context, url, error) =>
+                        const Icon(Icons.image_not_supported),
                       ),
                     ),
                   ),

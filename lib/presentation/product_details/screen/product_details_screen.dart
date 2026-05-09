@@ -5,9 +5,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
 import 'package:fork_up/domain/product_details/entity/mapper/product_details_mapper.dart';
-import 'package:fork_up/domain/product_details/entity/product_details_entity.dart';
 import 'package:fork_up/presentation/cart/cubit/cart_cubit.dart';
-import 'package:fork_up/presentation/shared/widgets/horizontal_list_widget.dart';
+import 'package:fork_up/presentation/shared/widgets/stack_list_widget.dart';
 import 'package:fork_up/presentation/product_details/cubit/product_cubit.dart';
 import 'package:fork_up/presentation/product_details/cubit/product_state.dart';
 import 'package:fork_up/presentation/product_details/widgets/product_image_slider.dart';
@@ -75,7 +74,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: width * 0.02),
-                    Center(child: ProductImagesSlider(images: data.images)),
+                    Center(child: ProductImagesSlider(
+                      product: data,
+                      images: data.images,
+                    )),
 
                     SizedBox(height: width * 0.03),
 
@@ -121,7 +123,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     Container(
                       padding: EdgeInsets.all(width * 0.02),
                       decoration: BoxDecoration(
-                        color: Color(0xFFEEB504).withOpacity(0.04),
+                          color: Color(0xFFEEB504).withValues(alpha: 0.04),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -472,7 +474,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         if (recentState.products.isEmpty) {
                           return SizedBox();
                         }
-                        return ProductHorizontalList(
+                        return StackListWidget(
                           scrollDirection: Axis.horizontal,
                           products: recentState.products,
                         );
@@ -515,7 +517,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     boxShadow: [
                       BoxShadow(
                         blurRadius: 12,
-                        color: Colors.black.withOpacity(0.08),
+                      color: Colors.black.withValues(alpha: 0.08),
                         offset: Offset(0, -2),
                       ),
                     ],
@@ -576,15 +578,21 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               horizontal: width * 0.08,
                             ),
                           ),
-                          onPressed: () async{
-                           await context.read<CartCubit>().addToCart(productDetails.toProduct(),quantity: quantity);
-                           ScaffoldMessenger.of(context).showSnackBar(
-                             SnackBar(
-                               content: Text('Product added to cart'),
-                               backgroundColor: Colors.green,
-                               duration: Duration(seconds: 2),
-                             ),
-                           );
+                          onPressed: () async {
+                            await context.read<CartCubit>().addToCart(
+                              productDetails.toProduct(),
+                              quantity: quantity,
+                            );
+
+                            if (!context.mounted) return;
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Product added to cart'),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
                           },
                           icon: SvgPicture.asset(
                             AppIcons.cartWhite,

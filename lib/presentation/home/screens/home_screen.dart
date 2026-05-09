@@ -1,22 +1,20 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
+import 'package:fork_up/presentation/best_seller/screen/best_seller_screen.dart';
 import 'package:fork_up/presentation/home/cubit/home_cubit.dart';
 import 'package:fork_up/presentation/home/cubit/home_state.dart';
-import 'package:fork_up/presentation/shared/widgets/horizontal_list_widget.dart';
+import 'package:fork_up/presentation/home/widgets/category_button.dart';
+import 'package:fork_up/presentation/new_arrivals/screen/new_arrivals_screen.dart';
+import 'package:fork_up/presentation/offers/screen/offers_screen.dart';
+import 'package:fork_up/presentation/offers/widget/offers_widget.dart';
+import 'package:fork_up/presentation/shared/widgets/stack_list_widget.dart';
 
 class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
-
-  final titles = [
-    "New arrivals",
-    "Offers",
-    "Best Sellers",
-    "Breaded ready to fry",
-  ];
-
+  const HomeScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
@@ -110,18 +108,23 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 20),
-                      Text(
-                        'See All',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.yellow,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => BestSellerScreen(),));
+                        },
+                        child: Text(
+                          'See All',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.yellow,
+                          ),
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: 20),
-                  ProductHorizontalList(
+                  StackListWidget(
                       scrollDirection: Axis.horizontal,
                       products: data.data.bestSellers),
                   SizedBox(height: 13),
@@ -158,16 +161,27 @@ class HomeScreen extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
-                                    height: 120,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.vertical(
-                                        top: Radius.circular(16),
-                                      ),
-                                      image: DecorationImage(
-                                        image: NetworkImage(category.icon),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(16),
+                                    ),
+                                    child: SizedBox(
+                                      height: 120,
+                                      width: double.infinity,
+                                      child: CachedNetworkImage(
+                                        imageUrl: category.icon,
                                         fit: BoxFit.cover,
+
+                                        fadeInDuration: Duration.zero,
+                                        fadeOutDuration: Duration.zero,
+
+                                        placeholder: (context, url) =>
+                                            Container(
+                                              color: Colors.grey.shade200,
+                                            ),
+
+                                        errorWidget: (context, url, error) =>
+                                            Icon(Icons.image_not_supported),
                                       ),
                                     ),
                                   ),
@@ -196,29 +210,54 @@ class HomeScreen extends StatelessWidget {
                   SizedBox(height: 28),
                   Padding(
                     padding: const EdgeInsets.only(left: 12),
-                    child: SizedBox(
-                      height: 37,
-                      width: 470,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: titles.length,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            margin: EdgeInsets.only(right: 7),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.blue,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              titles[index],
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          );
-                        },
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+
+                      child: Row(
+                        children: [
+
+                          CategoryButton(
+                            title: "New arrivals",
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const NewArrivalsScreen(),
+                                ),
+                              );
+                            },
+                          ),
+
+                          CategoryButton(
+                            title: "Offers",
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const OffersScreen(),
+                                ),
+                              );
+                            },
+                          ),
+
+                          CategoryButton(
+                            title: "Best Sellers",
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const BestSellerScreen(),
+                                ),
+                              );
+                            },
+                          ),
+
+                          CategoryButton(
+                            title: "Breaded ready to fry",
+                            onTap: () {
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -235,157 +274,30 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 20),
-                      Text(
-                        'See All',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.yellow,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => NewArrivalsScreen(),));
+                        },
+                        child: Text(
+                          'See All',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.yellow,
+                          ),
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: 20),
-                  ProductHorizontalList(
+                  StackListWidget(
                       scrollDirection: Axis.horizontal,
                       products: data.data.newArrivalProducts),
                   SizedBox(height: 24),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 12),
-                    child: SizedBox(
-                      height: 150,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: data.data.offers.length,
-                        itemBuilder: (context, index) {
-                          final offer = data.data.offers[index];
-                          return Container(
-                            margin: EdgeInsets.only(right: 12),
-                            child: Column(
-                              children: [
-                                Stack(
-                                  children: [
-                                    Container(
-                                      height: 140,
-                                      width: 350,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20),
-                                        image: DecorationImage(
-                                          image: NetworkImage(offer.url),
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      height: 140,
-                                      width: 350,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20),
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
-                                          colors: [
-                                            Colors.transparent,
-                                            Colors.black.withValues(
-                                              alpha: 0.7,
-                                              red: 0.6,
-                                              green: 0.6,
-                                              blue: 0.6,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      left: 16,
-                                      top: 20,
-                                      child: Container(
-                                        width: 88,
-                                        height: 26,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                          color: Colors.white,
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                            top: 3,
-                                          ),
-                                          child: Text(
-                                            "limited time",
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w400,
-                                              color: AppColors.darkGray,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      right: 16,
-                                      bottom: 17,
-                                      child: Container(
-                                        width: 70,
-                                        height: 26,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                          color: Colors.yellow,
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                            top: 3,
-                                          ),
-                                          child: Text(
-                                            "order",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      left: 16,
-                                      bottom: 20,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "get special offer",
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w800,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          Text(
-                                            "up to 60% off",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w400,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                  OffersWidget(
+                    margin: EdgeInsets.only(right: 12),
+                    height: 150,
+                    scrollDirection: Axis.horizontal,
                   ),
                   SizedBox(height: 20),
                   Row(
@@ -424,7 +336,21 @@ class HomeScreen extends StatelessWidget {
                             width: 120,
                             margin: EdgeInsets.only(right: 7),
                             decoration: BoxDecoration(color: Colors.white),
-                            child: Image.network(partner.image),
+                            child: CachedNetworkImage(
+                              imageUrl: partner.image,
+                              fit: BoxFit.cover,
+
+                              fadeInDuration: Duration.zero,
+                              fadeOutDuration: Duration.zero,
+
+                              placeholder: (context, url) =>
+                                  Container(
+                                    color: Colors.grey.shade200,
+                                  ),
+
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.image_not_supported),
+                            ),
                           );
                         },
                       ),

@@ -10,7 +10,7 @@ import 'package:fork_up/presentation/cart/screens/search_screen.dart';
 import 'package:fork_up/presentation/cart/widgets/cart_item_widget.dart';
 import 'package:fork_up/presentation/home/cubit/home_cubit.dart';
 import 'package:fork_up/presentation/home/cubit/home_state.dart';
-import 'package:fork_up/presentation/shared/widgets/horizontal_list_widget.dart';
+import 'package:fork_up/presentation/shared/widgets/stack_list_widget.dart';
 import 'package:fork_up/presentation/shared/cubit/recently_viewed_cubit.dart';
 import 'package:fork_up/presentation/shared/cubit/recently_viewed_state.dart';
 
@@ -135,7 +135,7 @@ class _CartScreenState extends State<CartScreen> {
                             final bestSellers = state.data.data.bestSellers;
                             return Column(
                               children: [
-                                ProductHorizontalList(
+                                StackListWidget(
                                   scrollDirection: Axis.horizontal,
                                   products: bestSellers,
                                 ),
@@ -171,7 +171,7 @@ class _CartScreenState extends State<CartScreen> {
                           if (recentState.products.isEmpty) {
                             return SizedBox();
                           }
-                          return ProductHorizontalList(
+                          return StackListWidget(
                             scrollDirection: Axis.horizontal,
                             products: recentState.products,
                           );
@@ -230,7 +230,7 @@ class _CartScreenState extends State<CartScreen> {
                             if (recentState.products.isEmpty) {
                               return SizedBox();
                             }
-                            return ProductHorizontalList(
+                            return StackListWidget(
                               scrollDirection: Axis.horizontal,
                               products: recentState.products,
                             );

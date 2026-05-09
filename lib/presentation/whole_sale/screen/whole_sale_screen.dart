@@ -13,6 +13,7 @@ import 'package:fork_up/presentation/shared/widgets/category_list_widget.dart';
 import 'package:fork_up/presentation/shared/widgets/product_grid_widget.dart';
 import 'package:fork_up/presentation/whole_sale/cubit/whole_sale_cubit.dart';
 import 'package:fork_up/presentation/whole_sale/cubit/whole_sale_state.dart';
+import 'package:fork_up/presentation/wish_list/cubit/wish_list_cubit.dart';
 
 class WholeSaleScreen extends StatefulWidget {
   const WholeSaleScreen({super.key});
@@ -99,20 +100,53 @@ class _WholeSaleScreenState extends State<WholeSaleScreen> {
                     }
                     if (state is WholeSaleSuccess) {
                       return ProductGridWidget(
+                        onLike: (product) {
+                          final isExist = context
+                              .read<WishlistCubit>()
+                              .isInWishlist(product);
+                          context.read<WishlistCubit>().toggle(product);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  isExist
+                                      ? 'Removed from wishlist'
+                                      : 'Added to wishlist',
+                                ),
+                                duration: Duration(seconds: 1),
+                              )
+                          );
+                        },
                         controller: controller,
                         items: state.products,
                         image: (product) => product.thumbnail,
                         name: (product) => product.name,
                         price: (product) => product.priceAfterDiscount,
-                        onAdd: (item) async {
-                          await context.read<CartCubit>().addToCart(item);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Product added to cart'),
-                              backgroundColor: Colors.green,
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
+                        favourite: (product) =>
+                              context.watch<WishlistCubit>().isInWishlist(product)?SvgPicture.asset(
+                                 AppIcons.likeFilled) : SvgPicture.asset(
+                                  AppIcons.like),
+                        add: (product) =>
+                          context.watch<CartCubit>().isInCart(product)
+                              ? SvgPicture.asset(AppIcons.check,height: 34,)
+                              : SvgPicture.asset(AppIcons.add),
+                        onAdd: (product) async {
+                          final cartCubit = context.read<CartCubit>();
+                          final messenger = ScaffoldMessenger.of(context);
+
+                          if (!cartCubit.isInCart(product)) {
+
+                            await cartCubit.addToCart(product);
+
+                            if (!context.mounted) return;
+
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text('Product added to cart'),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          }
                         },
                         onTap: (item) {
                           context.read<RecentlyViewedCubit>().add(item);

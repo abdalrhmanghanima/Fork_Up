@@ -105,8 +105,11 @@ class CartItemWidget extends StatelessWidget {
           ),
 
           IconButton(
-            onPressed: () async{
+            onPressed: () async {
               await context.read<CartCubit>().remove(item.product);
+
+              if (!context.mounted) return;
+
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Product removed from cart'),

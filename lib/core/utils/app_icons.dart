@@ -19,4 +19,8 @@ class AppIcons{
   static const String icon="assets/icons/Icon.svg";
   static const String sort="assets/icons/sort.svg";
   static const String filter="assets/icons/filter.svg";
+  static const String arrowRight="assets/icons/arrow_right.svg";
+  static const String arrowDown="assets/icons/arrow_down.svg";
+  static const String likeFilled="assets/icons/like_filled.svg";
+  static const String check="assets/icons/check.svg";
 }

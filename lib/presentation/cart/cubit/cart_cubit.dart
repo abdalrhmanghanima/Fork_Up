@@ -19,7 +19,9 @@ class CartCubit extends Cubit<CartState> {
     this.getCartUseCase,
     this.clearCartUseCase,
     this.removeFromCartUseCase,
-  ) : super(CartInitial());
+  ) : super(CartInitial()){
+    getCart();
+  }
 
   Future<void> getCart() async {
     try {
@@ -95,5 +97,14 @@ class CartCubit extends Cubit<CartState> {
 
       emit(CartLoaded(updated));
     }
+  }
+  bool isInCart(ProductEntity product) {
+    if (state is CartLoaded) {
+      final items = (state as CartLoaded).items;
+
+      return items.any((e) => e.product.id == product.id);
+    }
+
+    return false;
   }
 }

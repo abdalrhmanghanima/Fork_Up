@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -12,12 +11,12 @@ import 'package:fork_up/presentation/cart/cubit/search_cubit.dart';
 import 'package:fork_up/presentation/cart/cubit/search_state.dart';
 import 'package:fork_up/presentation/home/cubit/home_cubit.dart';
 import 'package:fork_up/presentation/home/cubit/home_state.dart';
-import 'package:fork_up/presentation/home/widgets/product_card_widget.dart';
 import 'package:fork_up/presentation/product_details/cubit/product_cubit.dart';
 import 'package:fork_up/presentation/product_details/screen/product_details_screen.dart';
 import 'package:fork_up/presentation/shared/cubit/recently_viewed_cubit.dart';
-import 'package:fork_up/presentation/shared/widgets/horizontal_list_widget.dart';
+import 'package:fork_up/presentation/shared/widgets/stack_list_widget.dart';
 import 'package:fork_up/presentation/shared/widgets/product_grid_widget.dart';
+import 'package:fork_up/presentation/wish_list/cubit/wish_list_cubit.dart';
 
 class SearchViewWidget extends StatefulWidget {
   const SearchViewWidget({super.key});
@@ -168,7 +167,7 @@ class _SearchViewWidgetState extends State<SearchViewWidget> {
                                     final bestSellers = state.data.data.bestSellers;
                                     return Column(
                                       children: [
-                                        ProductHorizontalList(
+                                        StackListWidget(
                                           scrollDirection: Axis.horizontal,
                                           products: bestSellers,
                                         ),
@@ -185,14 +184,38 @@ class _SearchViewWidgetState extends State<SearchViewWidget> {
                     }
                     if (state is SearchLoaded) {
                       return ProductGridWidget(
+
                         items: state.results,
 
                         image: (product) => product.thumbnail,
                         name: (product) => product.name,
                         price: (product) => product.priceAfterDiscount,
+                        favourite: (product) => context.watch<WishlistCubit>().isInWishlist(product)?
+                        SvgPicture.asset(AppIcons.likeFilled)
+                            : SvgPicture.asset(AppIcons.like),
+                        add: (product) =>
+                        context.watch<CartCubit>().isInCart(product)
+                            ? SvgPicture.asset(AppIcons.check,height: 34,)
+                            : SvgPicture.asset(AppIcons.add),
 
-                        onAdd: (product) {
-                          context.read<CartCubit>().addToCart(product);
+                        onAdd: (product) async {
+                          final cartCubit = context.read<CartCubit>();
+                          final messenger = ScaffoldMessenger.of(context);
+
+                          if (!cartCubit.isInCart(product)) {
+
+                            await cartCubit.addToCart(product);
+
+                            if (!context.mounted) return;
+
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text('Product added to cart'),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          }
                         },
 
                         onTap: (product) {
@@ -208,6 +231,22 @@ class _SearchViewWidgetState extends State<SearchViewWidget> {
                                 child: ProductDetailsScreen(),
                               ),
                             ),
+                          );
+                        },
+                        onLike: (product) {
+                          final isExist = context
+                              .read<WishlistCubit>()
+                              .isInWishlist(product);
+                          context.read<WishlistCubit>().toggle(product);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  isExist
+                                      ? 'Removed from wishlist'
+                                      : 'Added to wishlist',
+                                ),
+                                duration: Duration(seconds: 1),
+                              )
                           );
                         },
                       );

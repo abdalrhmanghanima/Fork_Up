@@ -7,8 +7,10 @@ import 'package:fork_up/domain/recently_viewed/use_case/add_product.dart';
 import 'package:fork_up/domain/recently_viewed/use_case/get_recently_products.dart';
 import 'package:fork_up/presentation/cart/cubit/cart_cubit.dart';
 import 'package:fork_up/presentation/home/cubit/home_cubit.dart';
+import 'package:fork_up/presentation/menu/cubit/navigation_cubit.dart';
 import 'package:fork_up/presentation/root.dart';
 import 'package:fork_up/presentation/shared/cubit/recently_viewed_cubit.dart';
+import 'package:fork_up/presentation/wish_list/cubit/wish_list_cubit.dart';
 final Dio dio = Dio();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +42,12 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => sl<CartCubit>(),
+        ),
+        BlocProvider(
+          create: (_) => sl<NavigationCubit>(),
+        ),
+        BlocProvider(
+          create: (_) => sl<WishlistCubit>(),
         ),
       ],
       child: MaterialApp(
