@@ -6,7 +6,7 @@ import 'package:fork_up/data/home/model/product_model.dart';
 class Data {
   final String bannerImage;
   final int cartCount;
-  final List<Category> categories;
+  final List<CategoryModel> categories;
   final List<Product> newArrivalProducts;
   final List<Product> bestSellers;
   final List<Partner> partners;
@@ -27,7 +27,7 @@ class Data {
       bannerImage: json['banner_image'],
       cartCount: json['cart_count'],
       categories: (json['categories'] as List)
-          .map((e) => Category.fromJson(e))
+          .map((e) => CategoryModel.fromJson(e))
           .toList(),
       newArrivalProducts: (json['new_arrival_products'] as List)
           .map((e) => Product.fromJson(e))

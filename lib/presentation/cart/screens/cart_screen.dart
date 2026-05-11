@@ -37,7 +37,7 @@ class CartScreen extends ConsumerWidget {
                   if (items.isEmpty) {
                     return Padding(
                       padding: const EdgeInsets.only(
-                          top: 12, right: 27, left: 27),
+                          top: 12, right: 27, left: 27,bottom: 18),
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,

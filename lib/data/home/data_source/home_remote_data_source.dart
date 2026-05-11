@@ -1,5 +1,5 @@
 import 'package:fork_up/data/home/model/home_model.dart';
 
-abstract class HomeRemoteDataSource {
+abstract class CategoriesRemoteDataSource {
   Future<HomeResponse> getHomeData();
 }

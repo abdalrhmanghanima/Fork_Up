@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
+import 'package:fork_up/domain/categories/arguments/categories_details_arguments.dart';
 import 'package:fork_up/presentation/cart/providers/cart_provider.dart';
-import 'package:fork_up/presentation/home/providers/home_provider.dart';
+import 'package:fork_up/presentation/categories/provider/categories_provider.dart';
+import 'package:fork_up/presentation/categories/screen/categories_details_screen.dart';
 import 'package:fork_up/presentation/product_details/screen/product_details_screen.dart';
 import 'package:fork_up/presentation/shared/provider/recently_viewed_provider.dart';
 import 'package:fork_up/presentation/shared/widgets/category_list_widget.dart';
@@ -23,6 +25,12 @@ class _WholeSaleScreenState extends ConsumerState<WholeSaleScreen> {
   @override
   void initState() {
     super.initState();
+    Future.microtask(() {
+
+      ref
+          .read(wholeSaleProvider.notifier)
+          .getProducts();
+    });
     controller.addListener(() {
       if (controller.position.pixels >=
           controller.position.maxScrollExtent - 200) {
@@ -35,7 +43,7 @@ class _WholeSaleScreenState extends ConsumerState<WholeSaleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final homeState = ref.watch(homeProvider);
+    final categoriesState = ref.watch(categoriesProvider);
     final wholeSaleState = ref.watch(wholeSaleProvider);
     final cartState = ref.watch(cartProvider);
     final wishListState = ref.watch(wishlistProvider);
@@ -55,13 +63,22 @@ class _WholeSaleScreenState extends ConsumerState<WholeSaleScreen> {
                     color: Colors.black,
                   ),
                 ),
-                homeState.when(
+                categoriesState.when(
                     data: (data) {
                       return Padding(
                         padding: const EdgeInsets.only(top: 13, bottom: 13),
                         child: CategoryListWidget(
-                          categories: data.data.categories,
-                          onTap: (category) {},
+                          categories: data.data,
+                          onTap: (category) {
+                            Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => CategoriesDetailsScreen(
+                                arguments: CategoryDetailsArgs(
+                                    id: category.id,
+                                    name: category.name,
+                                    subCategories: category.subCategory
+                                ),
+                              ),),);
+                          },
                         ),
                       );
                     },

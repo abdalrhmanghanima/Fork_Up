@@ -6,8 +6,14 @@ class GetProductsRepoImpl implements GetProductsRepo{
   final GetProductsRemoteDataSource remoteDataSource;
   GetProductsRepoImpl(this.remoteDataSource);
   @override
-  Future<List<ProductEntity>> getProducts({int page =1}) async {
-    final models = await remoteDataSource.getProducts(page: 1,limit: 1000);
+  Future<List<ProductEntity>> getProducts({
+    required int page,
+    int? categoryId,
+    int? subCategoryId,}) async {
+    final models = await remoteDataSource.getProducts(
+      page: page,
+      categoryId: categoryId,
+      subCategoryId: subCategoryId,);
     return models.map((e) => e.toEntity()).toList();
   }
 }

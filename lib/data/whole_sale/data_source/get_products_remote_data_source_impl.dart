@@ -9,19 +9,35 @@ class GetProductsRemoteDataSourceImpl implements GetProductsRemoteDataSource {
   GetProductsRemoteDataSourceImpl(this.dio);
 
   @override
-  Future<List<Product>> getProducts({int page = 1, int limit = 1000}) async {
+  Future<List<Product>> getProducts({
+    int page = 1,
+    int limit = 1000,
+    int? categoryId,
+    int? subCategoryId,
+  }) async {
     final response = await dio.get(
       ApiConstants.getProducts,
-      queryParameters: {"page": page, "per_page": limit},
+      queryParameters: {
+        "page_number": page,
+        "products_per_page": limit,
+        "is_wholesale": 1,
+
+        if (categoryId != null)
+          "category_id": categoryId,
+
+        if (subCategoryId != null)
+          "category_id": subCategoryId,
+
+      },
+
       options: Options(
         headers: {
           "Accept": "application/json",
-          "Authorization": "Bearer YOUR_TOKEN",
+          "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21heGltLmVudmlyb2dyb3VwLmlvL2FwaS92NS91c2VyL2F1dGgvbG9naW4iLCJpYXQiOjE3NzYxOTk1MzgsImV4cCI6MTc3ODc5MTUzOCwibmJmIjoxNzc2MTk5NTM4LCJqdGkiOiJ1eXF4VVczN2VlUWZvVlRTIiwic3ViIjoiNjYiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.Jm25W7q2ps4rtRzsJUcpB95Q2K3dqQ7AcAUqkIptOOI",
           "Accept-Language": "en",
         },
       ),
     );
-
     final data = response.data;
 
     final productsList = (data['data']?['products'] ?? []) as List;

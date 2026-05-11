@@ -7,8 +7,7 @@ import 'package:fork_up/domain/home/entity/product_entity.dart';
 import 'package:fork_up/domain/whole_sale/repository/get_products_repo.dart';
 import 'package:fork_up/domain/whole_sale/use_case/get_products_use_case.dart';
 
-class WholeSaleNotifier
-    extends AsyncNotifier<List<ProductEntity>> {
+class WholeSaleNotifier extends AsyncNotifier<List<ProductEntity>> {
 
   int currentPage = 1;
 
@@ -18,35 +17,49 @@ class WholeSaleNotifier
 
   List<ProductEntity> allProducts = [];
 
+  int? currentCategoryId;
+
+  int? currentSubCategoryId;
+
   @override
   Future<List<ProductEntity>> build() async {
-
-    return getProducts();
+    return [];
   }
 
-  Future<List<ProductEntity>> getProducts() async {
+  Future<void> getProducts({
+    int? categoryId,
+    int? subCategoryId,
+  }) async {
+
+    state = const AsyncLoading();
 
     try {
 
-      final useCase =
-      ref.read(getProductsUseCaseProvider);
+      currentCategoryId = categoryId;
 
-      final products =
-      await useCase(page: 1);
+      currentSubCategoryId = subCategoryId;
 
-      allProducts = products;
+      final useCase = ref.read(getProductsUseCaseProvider);
+
+      final products = await useCase(
+        page: 1,
+        categoryId: categoryId,
+        subCategoryId: subCategoryId,
+      );
 
       currentPage = 1;
 
+      allProducts = products;
+
       hasMore = products.length == 15;
 
-      return products;
+      state = AsyncData(
+        List.from(allProducts),
+      );
 
     } catch (e, stack) {
 
       state = AsyncError(e, stack);
-
-      return [];
     }
   }
 
@@ -65,8 +78,11 @@ class WholeSaleNotifier
       final useCase =
       ref.read(getProductsUseCaseProvider);
 
-      final products =
-      await useCase(page: currentPage);
+      final products = await useCase(
+        page: currentPage,
+        categoryId: currentCategoryId,
+        subCategoryId: currentSubCategoryId,
+      );
 
       if (products.isEmpty) {
 

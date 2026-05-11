@@ -6,7 +6,14 @@ class GetProductsUseCase {
 
   GetProductsUseCase(this.productRepo);
 
-  Future<List<ProductEntity>> call({int page = 1}) {
-    return productRepo.getProducts();
+  Future<List<ProductEntity>> call({
+    required int page,
+    int? categoryId,
+    int? subCategoryId,}) {
+    return productRepo.getProducts(
+      page: page,
+      categoryId: categoryId,
+      subCategoryId: subCategoryId,
+    );
   }
 }

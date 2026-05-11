@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fork_up/core/providers/app_provider.dart';
-import 'package:fork_up/core/routing/app_routes.dart';
 import 'package:fork_up/presentation/root.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,8 +32,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.root,
-      routes: {AppRoutes.root: (_) => const Root()},
+      home: const Root(),
     );
   }
 }

@@ -20,14 +20,14 @@ class HomeNotifier extends AsyncNotifier<HomeEntity> {
   }
 }
 final homeRemoteDataSourceProvider =
-Provider<HomeRemoteDataSource>((ref) {
+Provider<CategoriesRemoteDataSource>((ref) {
   return HomeRemoteDataSourceImpl(
     ref.read(dioProvider),
   );
 });
 
 final homeRepoProvider =
-Provider<HomeRepo>((ref) {
+Provider<CategoriesRepo>((ref) {
   return HomeRepositoryImpl(
     ref.read(homeRemoteDataSourceProvider),
   );

@@ -166,7 +166,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         }
                       return ProductGridWidget(
                         items: data,
-
                         image: (product) => product.thumbnail,
                         name: (product) => product.name,
                         price: (product) => product.priceAfterDiscount,

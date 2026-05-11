@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:fork_up/core/constants/api_const.dart';
 import 'package:fork_up/data/home/data_source/home_remote_data_source.dart';
 import 'package:fork_up/data/home/model/home_model.dart';
-class HomeRemoteDataSourceImpl extends HomeRemoteDataSource{
+class HomeRemoteDataSourceImpl extends CategoriesRemoteDataSource{
   final Dio dio;
   HomeRemoteDataSourceImpl(this.dio);
   @override
