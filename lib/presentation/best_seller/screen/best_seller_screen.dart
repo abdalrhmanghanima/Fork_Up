@@ -1,42 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fork_up/core/di/di.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
-import 'package:fork_up/presentation/cart/cubit/cart_cubit.dart';
-import 'package:fork_up/presentation/home/cubit/home_cubit.dart';
-import 'package:fork_up/presentation/home/cubit/home_state.dart';
-import 'package:fork_up/presentation/product_details/cubit/product_cubit.dart';
+import 'package:fork_up/presentation/cart/providers/cart_provider.dart';
+import 'package:fork_up/presentation/home/providers/home_provider.dart';
 import 'package:fork_up/presentation/product_details/screen/product_details_screen.dart';
-import 'package:fork_up/presentation/shared/cubit/recently_viewed_cubit.dart';
+import 'package:fork_up/presentation/shared/provider/recently_viewed_provider.dart';
 import 'package:fork_up/presentation/shared/widgets/product_grid_widget.dart';
-import 'package:fork_up/presentation/wish_list/cubit/wish_list_cubit.dart';
-class BestSellerScreen extends StatelessWidget {
+import 'package:fork_up/presentation/wish_list/provider/wish_list_provider.dart';
+class BestSellerScreen extends ConsumerWidget {
   const BestSellerScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+  Widget build(BuildContext context,WidgetRef ref) {
+    final size = MediaQuery
+        .of(context)
+        .size;
     final width = size.width;
+    final homeState = ref.watch(homeProvider);
+    final cartState= ref.watch(cartProvider);
+    final wishListState = ref.watch(wishlistProvider);
+
     return Scaffold(
-      appBar: AppBar(
-        leading: Padding(
-          padding: EdgeInsets.only(left: width * 0.04),
-          child: GestureDetector(
-            child: SvgPicture.asset(AppIcons.back),
-            onTap: () => Navigator.pop(context),
+        appBar: AppBar(
+          leading: Padding(
+            padding: EdgeInsets.only(left: width * 0.04),
+            child: GestureDetector(
+              child: SvgPicture.asset(AppIcons.back),
+              onTap: () => Navigator.pop(context),
+            ),
           ),
+          title: const Text("Top Selling Products"),
+          centerTitle: true,
         ),
-        title: const Text("Top Selling Products"),
-        centerTitle: true,
-      ),
-      body: BlocBuilder<HomeCubit, HomeState>(
-        builder: (context, state) {
-          if (state is HomeLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is HomeSuccess) {
-            final data = state.data;
+        body: homeState.when(
+          data: (data) {
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(24),
@@ -47,20 +45,31 @@ class BestSellerScreen extends StatelessWidget {
                       image: (product) => product.thumbnail,
                       name: (product) => product.name,
                       price: (product) => product.priceAfterDiscount,
-                      favourite: (product) => context.watch<WishlistCubit>().isInWishlist(product)?
-                      SvgPicture.asset(AppIcons.likeFilled)
-                          : SvgPicture.asset(AppIcons.like),
-                      add: (product) =>
-                      context.watch<CartCubit>().isInCart(product)
-                          ? SvgPicture.asset(AppIcons.check,height: 34,)
-                          : SvgPicture.asset(AppIcons.add),
+                      favourite: (product) {
+                        final isInWishlist =
+                        wishListState.any(
+                              (e) => e.id == product.id,
+                        );
+                        return isInWishlist?
+                        SvgPicture.asset(AppIcons.likeFilled)
+                            : SvgPicture.asset(AppIcons.like);
+
+                      },
+                      add: (product){
+                        final isInCart =
+                            cartState.value?.any(
+                                  (e) => e.product.id == product.id,
+                            ) ?? false;
+                         return isInCart
+                            ? SvgPicture.asset(AppIcons.check, height: 34,)
+                            : SvgPicture.asset(AppIcons.add);
+                      },
                       onAdd: (product) async {
-                        final cartCubit = context.read<CartCubit>();
+                        final cartNotifier = ref.read(cartProvider.notifier);
                         final messenger = ScaffoldMessenger.of(context);
 
-                        if (!cartCubit.isInCart(product)) {
-
-                          await cartCubit.addToCart(product);
+                        if (!cartNotifier.isInCart(product)) {
+                          await cartNotifier.addToCart(product);
 
                           if (!context.mounted) return;
 
@@ -73,25 +82,20 @@ class BestSellerScreen extends StatelessWidget {
                           );
                         }
                       },
-                      onTap: (item) {
-                        context.read<RecentlyViewedCubit>().add(item);
+                      onTap: (product) {
+                        ref.read(recentlyViewedProvider.notifier).add(product);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => BlocProvider(
-                              create: (_) =>
-                              sl<ProductDetailsCubit>()
-                                ..getProductDetails(item.slug),
-                              child: const ProductDetailsScreen(),
-                            ),
+                            builder: (_) => ProductDetailsScreen(product: product,),
                           ),
                         );
                       },
                       onLike: (product) {
-                        final isExist = context
-                            .read<WishlistCubit>()
+                        final isExist = ref
+                            .read(wishlistProvider.notifier)
                             .isInWishlist(product);
-                        context.read<WishlistCubit>().toggle(product);
+                        ref.read(wishlistProvider.notifier).toggle(product);
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
@@ -108,10 +112,19 @@ class BestSellerScreen extends StatelessWidget {
                 ),
               ),
             );
-          }
-          return SizedBox.shrink();
-        },
-      ),
+          },
+          loading: () {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+
+          error: (error, stack) {
+            return Center(
+              child: Text(error.toString()),
+            );
+          },
+        )
     );
   }
-}
+  }

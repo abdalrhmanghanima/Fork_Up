@@ -1,8 +1,6 @@
 import 'package:fork_up/domain/cart/entity/cart_entity.dart';
 import 'package:fork_up/domain/cart/repository/cart_repo.dart';
 import 'package:fork_up/domain/home/entity/product_entity.dart';
-import 'package:injectable/injectable.dart';
-@LazySingleton(as: CartRepository)
 class CartRepositoryImpl
     implements CartRepository {
   final List<CartEntity> _cart = [];

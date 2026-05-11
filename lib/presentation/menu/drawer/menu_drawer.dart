@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
 import 'package:fork_up/presentation/best_seller/screen/best_seller_screen.dart';
-import 'package:fork_up/presentation/menu/cubit/navigation_cubit.dart';
+import 'package:fork_up/presentation/menu/provider/navigation_provider.dart';
 import 'package:fork_up/presentation/menu/widget/list_tile_widget.dart';
 import 'package:fork_up/presentation/new_arrivals/screen/new_arrivals_screen.dart';
 import 'package:fork_up/presentation/offers/screen/offers_screen.dart';
 import 'package:fork_up/presentation/wish_list/screen/wish_list_screen.dart';
 
-class MenuDrawer extends StatefulWidget {
+class MenuDrawer extends ConsumerStatefulWidget {
   const MenuDrawer({super.key});
 
   @override
-  State<MenuDrawer> createState() => _MenuDrawerState();
+  ConsumerState<MenuDrawer> createState() => _MenuDrawerState();
 }
 
-class _MenuDrawerState extends State<MenuDrawer> {
+class _MenuDrawerState extends ConsumerState<MenuDrawer> {
   bool isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
-
     return Drawer(
       child: ListView(
         children: [
@@ -30,7 +29,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
             title: "Home",
             onTap: (){
               Navigator.pop(context);
-              context.read<NavigationCubit>().changeTab(0);
+              ref.read(navigationProvider.notifier).changeTab(0);
             },
           ),
           Padding(

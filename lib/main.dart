@@ -1,27 +1,29 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fork_up/core/di/di.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fork_up/core/providers/app_provider.dart';
 import 'package:fork_up/core/routing/app_routes.dart';
-import 'package:fork_up/domain/recently_viewed/use_case/add_product.dart';
-import 'package:fork_up/domain/recently_viewed/use_case/get_recently_products.dart';
-import 'package:fork_up/presentation/cart/cubit/cart_cubit.dart';
-import 'package:fork_up/presentation/home/cubit/home_cubit.dart';
-import 'package:fork_up/presentation/menu/cubit/navigation_cubit.dart';
 import 'package:fork_up/presentation/root.dart';
-import 'package:fork_up/presentation/shared/cubit/recently_viewed_cubit.dart';
-import 'package:fork_up/presentation/wish_list/cubit/wish_list_cubit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 final Dio dio = Dio();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  dio.interceptors.add(LogInterceptor(
-    request: true,
-    requestBody: true,
-    responseBody: true,
-    error: true,
-  ));
-  await init();
-  runApp(const MyApp());
+  final prefs = await SharedPreferences.getInstance();
+  dio.interceptors.add(
+    LogInterceptor(
+      request: true,
+      requestBody: true,
+      responseBody: true,
+      error: true,
+    ),
+  );
+  runApp(
+    ProviderScope(
+      overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -29,34 +31,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (_) => sl<HomeCubit>()..getHomeData(),
-        ),
-        BlocProvider(
-          create: (context) => RecentlyViewedCubit(
-              sl<GetRecentlyViewedUseCase>(),
-              sl<AddRecentlyViewedUseCase>(),
-          )..load(),
-        ),
-        BlocProvider(
-          create: (_) => sl<CartCubit>(),
-        ),
-        BlocProvider(
-          create: (_) => sl<NavigationCubit>(),
-        ),
-        BlocProvider(
-          create: (_) => sl<WishlistCubit>(),
-        ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        initialRoute: AppRoutes.root,
-        routes: {
-          AppRoutes.root: (_) => const Root(),
-        },
-      ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: AppRoutes.root,
+      routes: {AppRoutes.root: (_) => const Root()},
     );
   }
 }

@@ -2,9 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:fork_up/core/constants/api_const.dart';
 import 'package:fork_up/data/product_details/data_source/product_details_remote_data_source.dart';
 import 'package:fork_up/data/product_details/model/product_model.dart';
-import 'package:injectable/injectable.dart';
-
-@LazySingleton(as: ProductDetailsRemoteDataSource)
 class ProductDetailsRemoteDataSourceImpl
     extends ProductDetailsRemoteDataSource {
   final Dio dio;

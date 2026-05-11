@@ -1,39 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
+import 'package:fork_up/domain/home/entity/product_entity.dart';
 import 'package:fork_up/domain/product_details/entity/mapper/product_details_mapper.dart';
-import 'package:fork_up/presentation/cart/cubit/cart_cubit.dart';
+import 'package:fork_up/presentation/cart/providers/cart_provider.dart';
+import 'package:fork_up/presentation/product_details/provider/product_details_provider.dart';
+import 'package:fork_up/presentation/shared/provider/recently_viewed_provider.dart';
 import 'package:fork_up/presentation/shared/widgets/stack_list_widget.dart';
-import 'package:fork_up/presentation/product_details/cubit/product_cubit.dart';
-import 'package:fork_up/presentation/product_details/cubit/product_state.dart';
 import 'package:fork_up/presentation/product_details/widgets/product_image_slider.dart';
 import 'package:fork_up/presentation/product_details/widgets/small_product_card.dart';
-import 'package:fork_up/presentation/shared/cubit/recently_viewed_cubit.dart';
-import 'package:fork_up/presentation/shared/cubit/recently_viewed_state.dart';
 
-class ProductDetailsScreen extends StatefulWidget {
-  const ProductDetailsScreen({super.key,});
+class ProductDetailsScreen extends ConsumerStatefulWidget {
+  final ProductEntity product;
+
+  const ProductDetailsScreen({super.key,required this.product });
 
   @override
-  State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
+  ConsumerState<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
 }
 
-class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
   int quantity = 1;
-
   @override
   void initState() {
     super.initState();
-    context.read<RecentlyViewedCubit>().load();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+
+      ref
+          .read(
+        recentlyViewedProvider.notifier,
+      )
+          .add(widget.product);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final width = size.width;
+    final productDetailsState = ref.watch(productDetailsProvider(widget.product.slug));
+    final recentlyViewedState = ref.watch(recentlyViewedProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -54,19 +64,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         ],
       ),
 
-      body: BlocBuilder<ProductDetailsCubit, ProductState>(
-        builder: (context, state) {
-          if (state is ProductLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state is ProductError) {
-            return Center(child: Text(state.message));
-          }
-
-          if (state is ProductSuccess) {
-            final data = state.product;
-
+      body: productDetailsState.when(
+          data: (data) {
             return SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: width * 0.06),
@@ -123,7 +122,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     Container(
                       padding: EdgeInsets.all(width * 0.02),
                       decoration: BoxDecoration(
-                          color: Color(0xFFEEB504).withValues(alpha: 0.04),
+                        color: Color(0xFFEEB504).withValues(alpha: 0.04),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -239,7 +238,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     children: [
                                       Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                         children: [
                                           Container(
                                             width: constraints.maxWidth * 0.1,
@@ -247,7 +246,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                             decoration: BoxDecoration(
                                               color: Colors.white,
                                               borderRadius:
-                                                  BorderRadius.circular(12),
+                                              BorderRadius.circular(12),
                                             ),
                                             child: Icon(
                                               Icons.check,
@@ -262,16 +261,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   'Soly Salmon',
                                                   maxLines: 1,
                                                   overflow:
-                                                      TextOverflow.ellipsis,
+                                                  TextOverflow.ellipsis,
                                                   style: TextStyle(
                                                     fontSize:
-                                                        constraints.maxWidth *
+                                                    constraints.maxWidth *
                                                         0.04,
                                                     fontWeight: FontWeight.w600,
                                                   ),
@@ -280,7 +279,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                   '\$ 17,230',
                                                   style: TextStyle(
                                                     fontSize:
-                                                        constraints.maxWidth *
+                                                    constraints.maxWidth *
                                                         0.04,
                                                     fontWeight: FontWeight.bold,
                                                     color: AppColors.yellow,
@@ -299,21 +298,21 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                       DropdownButtonFormField<String>(
                                         initialValue: 'Option 1',
                                         items:
-                                            ["Option 1", "Option 2", "Option 3"]
-                                                .map(
-                                                  (e) => DropdownMenuItem(
-                                                    value: e,
-                                                    child: Text(e),
-                                                  ),
-                                                )
-                                                .toList(),
+                                        ["Option 1", "Option 2", "Option 3"]
+                                            .map(
+                                              (e) => DropdownMenuItem(
+                                            value: e,
+                                            child: Text(e),
+                                          ),
+                                        )
+                                            .toList(),
                                         onChanged: (value) {},
                                         decoration: InputDecoration(
                                           contentPadding: EdgeInsets.symmetric(
                                             horizontal:
-                                                constraints.maxWidth * 0.03,
+                                            constraints.maxWidth * 0.03,
                                             vertical:
-                                                constraints.maxWidth * 0.025,
+                                            constraints.maxWidth * 0.025,
                                           ),
                                           filled: true,
                                           fillColor: Colors.white,
@@ -332,7 +331,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                                       Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                         children: [
                                           Container(
                                             width: constraints.maxWidth * 0.1,
@@ -340,7 +339,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                             decoration: BoxDecoration(
                                               color: Colors.white,
                                               borderRadius:
-                                                  BorderRadius.circular(12),
+                                              BorderRadius.circular(12),
                                             ),
                                           ),
 
@@ -351,16 +350,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   'Soly Salmon',
                                                   maxLines: 1,
                                                   overflow:
-                                                      TextOverflow.ellipsis,
+                                                  TextOverflow.ellipsis,
                                                   style: TextStyle(
                                                     fontSize:
-                                                        constraints.maxWidth *
+                                                    constraints.maxWidth *
                                                         0.04,
                                                     fontWeight: FontWeight.w600,
                                                   ),
@@ -369,7 +368,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                   '\$ 17,230',
                                                   style: TextStyle(
                                                     fontSize:
-                                                        constraints.maxWidth *
+                                                    constraints.maxWidth *
                                                         0.04,
                                                     fontWeight: FontWeight.bold,
                                                     color: AppColors.yellow,
@@ -385,7 +384,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                                       Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
+                                        MainAxisAlignment.spaceAround,
                                         children: [
                                           Flexible(
                                             child: Text(
@@ -393,9 +392,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                 fontSize:
-                                                    constraints.maxWidth * 0.04,
+                                                constraints.maxWidth * 0.04,
                                                 decoration:
-                                                    TextDecoration.lineThrough,
+                                                TextDecoration.lineThrough,
                                                 color: Colors.red,
                                               ),
                                             ),
@@ -406,7 +405,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                 fontSize:
-                                                    constraints.maxWidth *
+                                                constraints.maxWidth *
                                                     0.045,
                                                 fontWeight: FontWeight.w600,
                                                 color: AppColors.yellow,
@@ -469,16 +468,27 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                     SizedBox(height: width * 0.04),
 
-                    BlocBuilder<RecentlyViewedCubit, RecentlyViewedState>(
-                      builder: (context, recentState) {
-                        if (recentState.products.isEmpty) {
-                          return SizedBox();
-                        }
-                        return StackListWidget(
-                          scrollDirection: Axis.horizontal,
-                          products: recentState.products,
+                    recentlyViewedState.when(
+                        data: (data) {
+                          if(data.isEmpty){
+                            return SizedBox();
+                          }
+                          return StackListWidget(
+                            scrollDirection: Axis.horizontal,
+                            products: data,
+                          );
+                        },
+                      error: (error, stack) {
+                        return Center(
+                          child: Text(error.toString()),
                         );
                       },
+                      loading: () {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      },
+
                     ),
 
                     SizedBox(height: 30),
@@ -486,23 +496,23 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ),
               ),
             );
-          }
-
-          return SizedBox();
+          },
+        error: (error, stack) {
+          return Center(
+            child: Text(error.toString()),
+          );
+        },
+        loading: () {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         },
       ),
 
-      bottomNavigationBar: BlocBuilder<ProductDetailsCubit, ProductState>(
-        builder: (context, state) {
-          if (state is ProductLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state is ProductError) {
-            return Center(child: Text(state.message));
-          }
-          if (state is ProductSuccess) {
-            final productDetails = state.product;
+      bottomNavigationBar:
+      productDetailsState.when(
+          data: (data) {
+            final productDetails = data;
             return LayoutBuilder(
               builder: (context, constraints) {
                 final width = constraints.maxWidth;
@@ -517,7 +527,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     boxShadow: [
                       BoxShadow(
                         blurRadius: 12,
-                      color: Colors.black.withValues(alpha: 0.08),
+                        color: Colors.black.withValues(alpha: 0.08),
                         offset: Offset(0, -2),
                       ),
                     ],
@@ -579,7 +589,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             ),
                           ),
                           onPressed: () async {
-                            await context.read<CartCubit>().addToCart(
+                            await ref.read(cartProvider.notifier).addToCart(
                               productDetails.toProduct(),
                               quantity: quantity,
                             );
@@ -615,10 +625,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 );
               },
             );
-          }
-          return SizedBox.shrink();
+          },
+        error: (error, stack) {
+          return Center(
+            child: Text(error.toString()),
+          );
         },
-      ),
+        loading: () {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      )
     );
   }
 }

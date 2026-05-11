@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
 import 'package:fork_up/domain/cart/entity/cart_entity.dart';
-import 'package:fork_up/presentation/cart/cubit/cart_cubit.dart';
+import 'package:fork_up/presentation/cart/providers/cart_provider.dart';
 
-class CartItemWidget extends StatelessWidget {
+class CartItemWidget extends ConsumerWidget {
   final CartEntity item;
 
   const CartItemWidget({
@@ -15,7 +15,7 @@ class CartItemWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
     final product = item.product;
 
     return Container(
@@ -66,7 +66,7 @@ class CartItemWidget extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        context.read<CartCubit>().decreaseQuantity(item.product);
+                        ref.read(cartProvider.notifier).decreaseQuantity(item.product);
                       },
                       child: Container(
                         padding: const EdgeInsets.all(6),
@@ -87,7 +87,7 @@ class CartItemWidget extends StatelessWidget {
                     const SizedBox(width: 12),
                     GestureDetector(
                       onTap: () {
-                        context.read<CartCubit>().increaseQuantity(item.product);
+                        ref.read(cartProvider.notifier).increaseQuantity(item.product);
                       },
                       child: Container(
                         padding: const EdgeInsets.all(6),
@@ -106,7 +106,7 @@ class CartItemWidget extends StatelessWidget {
 
           IconButton(
             onPressed: () async {
-              await context.read<CartCubit>().remove(item.product);
+              await ref.read(cartProvider.notifier).remove(item.product);
 
               if (!context.mounted) return;
 

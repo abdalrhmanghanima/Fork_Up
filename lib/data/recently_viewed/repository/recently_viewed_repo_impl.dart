@@ -2,8 +2,6 @@ import 'package:fork_up/data/home/model/product_model.dart';
 import 'package:fork_up/data/recently_viewed/data_source/recently_local_data_source.dart';
 import 'package:fork_up/domain/home/entity/product_entity.dart';
 import 'package:fork_up/domain/recently_viewed/repository/recently_viewed_repo.dart';
-import 'package:injectable/injectable.dart';
-@LazySingleton(as: RecentlyViewedRepository)
 class RecentlyViewedRepositoryImpl
     implements RecentlyViewedRepository {
   final RecentlyViewedLocalDataSource local;

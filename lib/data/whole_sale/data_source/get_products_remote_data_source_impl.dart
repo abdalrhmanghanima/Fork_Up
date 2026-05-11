@@ -2,9 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:fork_up/core/constants/api_const.dart';
 import 'package:fork_up/data/home/model/product_model.dart';
 import 'package:fork_up/data/whole_sale/data_source/get_products_remote_data_source.dart';
-import 'package:injectable/injectable.dart';
 
-@LazySingleton(as: GetProductsRemoteDataSource)
 class GetProductsRemoteDataSourceImpl implements GetProductsRemoteDataSource {
   final Dio dio;
 

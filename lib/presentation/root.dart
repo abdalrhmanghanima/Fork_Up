@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
 import 'package:fork_up/presentation/cart/screens/cart_screen.dart';
 import 'package:fork_up/presentation/home/screens/home_screen.dart';
-import 'package:fork_up/presentation/menu/cubit/navigation_cubit.dart';
 import 'package:fork_up/presentation/menu/drawer/menu_drawer.dart';
+import 'package:fork_up/presentation/menu/provider/navigation_provider.dart';
 import 'package:fork_up/presentation/whole_sale/screen/whole_sale_screen.dart';
-class Root extends StatefulWidget {
+class Root extends ConsumerStatefulWidget {
   const Root({super.key});
 
   @override
-  State<Root> createState() => _RootState();
+  ConsumerState<Root> createState() => _RootState();
 }
 
-class _RootState extends State<Root> {
+class _RootState extends ConsumerState<Root> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
 
 
@@ -29,8 +29,7 @@ class _RootState extends State<Root> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<NavigationCubit,int>(
-      builder: (context, currentIndex) {
+    final currentIndex =ref.watch(navigationProvider);
         return Scaffold(
           key: scaffoldKey,
           drawer: MenuDrawer(),
@@ -67,7 +66,7 @@ class _RootState extends State<Root> {
                     scaffoldKey.currentState!.openDrawer();
                     return;
                   }
-                  context.read<NavigationCubit>().changeTab(index);
+                  ref.read(navigationProvider.notifier).changeTab(index);
                 },
                 items: [
                   BottomNavigationBarItem(
@@ -111,7 +110,5 @@ class _RootState extends State<Root> {
             ),
           ),
         );
-      },
-    );
   }
 }

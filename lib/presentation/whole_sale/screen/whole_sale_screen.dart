@@ -1,28 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fork_up/core/di/di.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
-import 'package:fork_up/presentation/cart/cubit/cart_cubit.dart';
-import 'package:fork_up/presentation/home/cubit/home_cubit.dart';
-import 'package:fork_up/presentation/home/cubit/home_state.dart';
-import 'package:fork_up/presentation/product_details/cubit/product_cubit.dart';
+import 'package:fork_up/presentation/cart/providers/cart_provider.dart';
+import 'package:fork_up/presentation/home/providers/home_provider.dart';
 import 'package:fork_up/presentation/product_details/screen/product_details_screen.dart';
-import 'package:fork_up/presentation/shared/cubit/recently_viewed_cubit.dart';
+import 'package:fork_up/presentation/shared/provider/recently_viewed_provider.dart';
 import 'package:fork_up/presentation/shared/widgets/category_list_widget.dart';
 import 'package:fork_up/presentation/shared/widgets/product_grid_widget.dart';
-import 'package:fork_up/presentation/whole_sale/cubit/whole_sale_cubit.dart';
-import 'package:fork_up/presentation/whole_sale/cubit/whole_sale_state.dart';
-import 'package:fork_up/presentation/wish_list/cubit/wish_list_cubit.dart';
+import 'package:fork_up/presentation/whole_sale/provider/whole_sale_provider.dart';
+import 'package:fork_up/presentation/wish_list/provider/wish_list_provider.dart';
 
-class WholeSaleScreen extends StatefulWidget {
+class WholeSaleScreen extends ConsumerStatefulWidget {
   const WholeSaleScreen({super.key});
 
   @override
-  State<WholeSaleScreen> createState() => _WholeSaleScreenState();
+  ConsumerState<WholeSaleScreen> createState() => _WholeSaleScreenState();
 }
 
-class _WholeSaleScreenState extends State<WholeSaleScreen> {
+class _WholeSaleScreenState extends ConsumerState<WholeSaleScreen> {
   final controller = ScrollController();
   @override
   void initState() {
@@ -30,16 +26,20 @@ class _WholeSaleScreenState extends State<WholeSaleScreen> {
     controller.addListener(() {
       if (controller.position.pixels >=
           controller.position.maxScrollExtent - 200) {
-        context.read<WholeSaleCubit>().loadMore();
+        ref
+            .read(wholeSaleProvider.notifier)
+            .loadMore();
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<WholeSaleCubit>()..getProducts(),
-      child: Scaffold(
+    final homeState = ref.watch(homeProvider);
+    final wholeSaleState = ref.watch(wholeSaleProvider);
+    final cartState = ref.watch(cartProvider);
+    final wishListState = ref.watch(wishlistProvider);
+    return Scaffold(
         appBar: AppBar(title: const Text("WholeSale"), centerTitle: true),
         body: SingleChildScrollView(
           child: Padding(
@@ -55,13 +55,8 @@ class _WholeSaleScreenState extends State<WholeSaleScreen> {
                     color: Colors.black,
                   ),
                 ),
-                BlocBuilder<HomeCubit, HomeState>(
-                  builder: (context, state) {
-                    if (state is HomeLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (state is HomeSuccess) {
-                      final data = state.data;
+                homeState.when(
+                    data: (data) {
                       return Padding(
                         padding: const EdgeInsets.only(top: 13, bottom: 13),
                         child: CategoryListWidget(
@@ -69,8 +64,17 @@ class _WholeSaleScreenState extends State<WholeSaleScreen> {
                           onTap: (category) {},
                         ),
                       );
-                    }
-                    return SizedBox.shrink();
+                    },
+                  loading: () {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  },
+
+                  error: (error, stack) {
+                    return Center(
+                      child: Text(error.toString()),
+                    );
                   },
                 ),
                 Row(
@@ -90,21 +94,14 @@ class _WholeSaleScreenState extends State<WholeSaleScreen> {
                   ],
                 ),
                 SizedBox(height: 8),
-                BlocBuilder<WholeSaleCubit, WholeSaleState>(
-                  builder: (context, state) {
-                    if (state is WholeSaleLoading) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    if (state is WholeSaleError) {
-                      return Center(child: Text("Error"));
-                    }
-                    if (state is WholeSaleSuccess) {
+                wholeSaleState.when(
+                    data: (data) {
                       return ProductGridWidget(
                         onLike: (product) {
-                          final isExist = context
-                              .read<WishlistCubit>()
+                          final isExist = ref
+                              .read(wishlistProvider.notifier)
                               .isInWishlist(product);
-                          context.read<WishlistCubit>().toggle(product);
+                          ref.read(wishlistProvider.notifier).toggle(product);
                           ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
@@ -117,25 +114,35 @@ class _WholeSaleScreenState extends State<WholeSaleScreen> {
                           );
                         },
                         controller: controller,
-                        items: state.products,
+                        items: data,
                         image: (product) => product.thumbnail,
                         name: (product) => product.name,
                         price: (product) => product.priceAfterDiscount,
-                        favourite: (product) =>
-                              context.watch<WishlistCubit>().isInWishlist(product)?SvgPicture.asset(
-                                 AppIcons.likeFilled) : SvgPicture.asset(
-                                  AppIcons.like),
-                        add: (product) =>
-                          context.watch<CartCubit>().isInCart(product)
-                              ? SvgPicture.asset(AppIcons.check,height: 34,)
-                              : SvgPicture.asset(AppIcons.add),
+                        favourite: (product) {
+                          final isInWishlist =
+                          wishListState.any(
+                                (e) => e.id == product.id,
+                          );
+                          return isInWishlist?
+                          SvgPicture.asset(AppIcons.likeFilled)
+                              : SvgPicture.asset(AppIcons.like);
+
+                        },
+                        add: (product){
+                          final isInCart =
+                              cartState.value?.any(
+                                    (e) => e.product.id == product.id,
+                              ) ?? false;
+                          return isInCart
+                              ? SvgPicture.asset(AppIcons.check, height: 34,)
+                              : SvgPicture.asset(AppIcons.add);
+                        },
                         onAdd: (product) async {
-                          final cartCubit = context.read<CartCubit>();
+                          final cartNotifier = ref.read(cartProvider.notifier);
                           final messenger = ScaffoldMessenger.of(context);
 
-                          if (!cartCubit.isInCart(product)) {
-
-                            await cartCubit.addToCart(product);
+                          if (!cartNotifier.isInCart(product)) {
+                            await cartNotifier.addToCart(product);
 
                             if (!context.mounted) return;
 
@@ -148,30 +155,33 @@ class _WholeSaleScreenState extends State<WholeSaleScreen> {
                             );
                           }
                         },
-                        onTap: (item) {
-                          context.read<RecentlyViewedCubit>().add(item);
+                        onTap: (product) {
+                          ref.read(recentlyViewedProvider.notifier).add(product);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => BlocProvider(
-                                create: (_) =>
-                                    sl<ProductDetailsCubit>()
-                                      ..getProductDetails(item.slug),
-                                child: const ProductDetailsScreen(),
-                              ),
+                              builder: (_) => ProductDetailsScreen(product: product,),
                             ),
                           );
                         },
                       );
-                    }
-                    return SizedBox.shrink();
+                    },
+                  loading: () {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
                   },
-                ),
+
+                  error: (error, stack) {
+                    return Center(
+                      child: Text(error.toString()),
+                    );
+                  },
+                )
               ],
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }
