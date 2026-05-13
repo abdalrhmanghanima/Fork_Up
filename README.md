@@ -43,6 +43,16 @@ Fork Up provides a smooth shopping experience for seafood lovers with categorize
 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
   <img src="assets/readme/category_details.png" width="180"/>
   <img src="assets/readme/sub_category.png" width="180"/>
+  <img src="assets/readme/rest_of_sub_cat.png" width="180"/>
+  <img src="assets/readme/rest_of_sub_category.png" width="180"/>
+</div>
+
+---
+
+## 📄 Product Details
+<div style="display: flex; gap: 10px; flex-wrap: wrap;">
+  <img src="assets/readme/product_details.png" width="180"/>
+  <img src="assets/readme/rest_of_product_details.png" width="180"/>
 </div>
 
 ---
@@ -198,11 +208,6 @@ assets/
 
 - 🔐 Authentication
 - 💳 Payment Integration
-- 📍 Order Tracking
-- 🌙 Dark Mode
-- 🔔 Push Notifications
-- 🌍 Localization
-- 🧾 Order History
 
 ---
 
@@ -211,4 +216,4 @@ assets/
 ### Abdelrahman Ghanima
 
 GitHub:
-https://github.com/abdalrhmanghanima/Fork_Up.git
+https://github.com/abdalrhmanghanima/Fork_Up
