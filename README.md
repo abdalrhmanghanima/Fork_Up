@@ -16,6 +16,15 @@ Fork Up provides a smooth shopping experience for seafood lovers with categorize
 
 ---
 
+## 🔐 Authentication
+<div style="display: flex; gap: 10px; flex-wrap: wrap;">
+  <img src="assets/readme/sign_with_phone.png" width="180"/>
+  <img src="assets/readme/otp_screen.png" width="180"/>
+  <img src="assets/readme/create_account.png" width="180"/>
+</div>
+
+---
+
 ## 🛒 Cart
 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
   <img src="assets/readme/cart.png" width="180"/>
@@ -43,16 +52,6 @@ Fork Up provides a smooth shopping experience for seafood lovers with categorize
 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
   <img src="assets/readme/category_details.png" width="180"/>
   <img src="assets/readme/sub_category.png" width="180"/>
-  <img src="assets/readme/rest_of_sub_cat.png" width="180"/>
-  <img src="assets/readme/rest_of_sub_category.png" width="180"/>
-</div>
-
----
-
-## 📄 Product Details
-<div style="display: flex; gap: 10px; flex-wrap: wrap;">
-  <img src="assets/readme/product_details.png" width="180"/>
-  <img src="assets/readme/rest_of_product_details.png" width="180"/>
 </div>
 
 ---
@@ -83,6 +82,9 @@ Fork Up provides a smooth shopping experience for seafood lovers with categorize
 # ✨ Features
 
 - 🏠 Modern Home Screen
+- 🔐 Phone Authentication
+- 📲 OTP Verification
+- 👤 Create Account Flow
 - 🍤 Seafood Categories & Subcategories
 - 📦 Wholesale Products
 - 🔍 Product Search
@@ -190,6 +192,7 @@ The application uses REST APIs to fetch:
 - Offers
 - Top Selling Products
 - New Arrivals
+- Authentication & OTP Verification
 
 ---
 
@@ -206,8 +209,10 @@ assets/
 
 # 🔮 Upcoming Features
 
-- 🔐 Authentication
 - 💳 Payment Integration
+- 📍 Order Tracking
+- 🔔 Push Notifications
+- 🧾 Order History
 
 ---
 
@@ -216,4 +221,4 @@ assets/
 ### Abdelrahman Ghanima
 
 GitHub:
-https://github.com/abdalrhmanghanima/Fork_Up
+https://github.com/abdalrhmanghanima/Fork_Up.git

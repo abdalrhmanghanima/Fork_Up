@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
 import 'package:fork_up/domain/categories/arguments/categories_details_arguments.dart';
+import 'package:fork_up/presentation/auth/screens/sign_with_phone_screen.dart';
 import 'package:fork_up/presentation/best_seller/screen/best_seller_screen.dart';
 import 'package:fork_up/presentation/cart/screens/search_screen.dart';
 import 'package:fork_up/presentation/categories/provider/categories_provider.dart';
@@ -22,7 +23,6 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context,WidgetRef ref) {
     final homeState = ref.watch(homeProvider);
     final categoriesState = ref.watch(categoriesProvider);
-
     return Scaffold(
             body:
             homeState.when(
@@ -43,31 +43,37 @@ class HomeScreen extends ConsumerWidget {
                                 ),
                               ),
                             ),
-                            Positioned(
-                              left: 16,
-                              top: 70,
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "Login",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
+                                   Positioned(
+                                    left: 16,
+                                    top: 70,
+                                    child: Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SignWithPhoneScreen(),)),
+                                          child: Text(
+                                            "Login",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 20),
+                                        GestureDetector(
+                                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SignWithPhoneScreen(),)),
+                                          child: Text(
+                                            "SignUp",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  SizedBox(width: 20),
-                                  Text(
-                                    "SignUp",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
                             Positioned(
                               right: 16,
                               top: 70,

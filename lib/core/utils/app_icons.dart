@@ -23,4 +23,8 @@ class AppIcons{
   static const String arrowDown="assets/icons/arrow_down.svg";
   static const String likeFilled="assets/icons/like_filled.svg";
   static const String check="assets/icons/check.svg";
+  static const String checkWhite="assets/icons/check_white.svg";
+  static const String faceBook="assets/icons/Facebook.svg";
+  static const String google="assets/icons/google.svg";
+  static const String time="assets/icons/time.svg";
 }
