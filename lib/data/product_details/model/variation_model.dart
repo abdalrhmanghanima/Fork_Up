@@ -13,10 +13,8 @@ class VariationModel extends VariationEntity {
     return VariationModel(
       id: json['id'],
       option: json['option'],
-      priceBeforeDiscount:
-      (json['price_before_discount'] as num).toDouble(),
-      priceAfterDiscount:
-      (json['price_after_discount'] as num).toDouble(),
+      priceBeforeDiscount: (json['price_before_discount'] as num).toDouble(),
+      priceAfterDiscount: (json['price_after_discount'] as num).toDouble(),
       stock: json['product_stock_count'],
     );
   }

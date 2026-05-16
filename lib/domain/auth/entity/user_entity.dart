@@ -1,13 +1,13 @@
 class UserEntity {
   final int id;
-  final String firstName;
-  final String lastName;
+  final String? firstName;
+  final String? lastName;
   final String username;
-  final String phone;
-  final dynamic address;
+  final String? phone;
+  final String? address;
   final String? image;
-  final dynamic email;
-  final String token;
+  final String? email;
+  final String? token;
   final int notificationCount;
   final bool isRegistered;
   final int? isFirstOrder;

@@ -7,11 +7,7 @@ class CategoryListWidget extends StatelessWidget {
   final List<CategoryEntity> categories;
   final void Function(dynamic category)? onTap;
 
-  const CategoryListWidget({
-    super.key,
-    required this.categories,
-    this.onTap,
-  });
+  const CategoryListWidget({super.key, required this.categories, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -50,12 +46,10 @@ class CategoryListWidget extends StatelessWidget {
                         fadeOutDuration: Duration.zero,
 
                         placeholder: (context, url) =>
-                            Container(
-                              color: Colors.grey.shade200,
-                            ),
+                            Container(color: Colors.grey.shade200),
 
                         errorWidget: (context, url, error) =>
-                        const Icon(Icons.image_not_supported),
+                            const Icon(Icons.image_not_supported),
                       ),
                     ),
                   ),

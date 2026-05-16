@@ -2,6 +2,7 @@ import 'package:fork_up/data/product_details/model/attribute_model.dart';
 import 'package:fork_up/data/product_details/model/buy_it_together_model.dart';
 import 'package:fork_up/data/product_details/model/related_product_model.dart';
 import 'package:fork_up/domain/product_details/entity/product_details_entity.dart';
+
 class ProductDetailsModel extends ProductDetailsEntity {
   const ProductDetailsModel({
     required super.buyItTogether,
@@ -42,16 +43,14 @@ class ProductDetailsModel extends ProductDetailsEntity {
           .toList(),
 
       priceBeforeDiscount:
-      (json['price_before_discount'] as num?)?.toDouble() ?? 0,
+          (json['price_before_discount'] as num?)?.toDouble() ?? 0,
 
       priceAfterDiscount:
-      (json['price_after_discount'] as num?)?.toDouble() ?? 0,
+          (json['price_after_discount'] as num?)?.toDouble() ?? 0,
 
       thumbnail: json['thumbnail'] ?? '',
 
-      images: (json['images'] as List? ?? [])
-          .map((e) => e.toString())
-          .toList(),
+      images: (json['images'] as List? ?? []).map((e) => e.toString()).toList(),
 
       description: json['description'] ?? '',
 
@@ -106,6 +105,7 @@ class ProductDetailsModel extends ProductDetailsEntity {
       'buy_it_together': [],
     };
   }
+
   // ===========================
   // FROM ENTITY 🔥
   // ===========================
@@ -157,6 +157,7 @@ class ProductDetailsModel extends ProductDetailsEntity {
       relatedProducts: relatedProducts,
     );
   }
+
   ProductDetailsEntity toDetailsEntity() {
     return ProductDetailsEntity(
       id: id,
@@ -178,4 +179,5 @@ class ProductDetailsModel extends ProductDetailsEntity {
       relatedProducts: [],
       buyItTogether: [],
     );
-  }}
+  }
+}

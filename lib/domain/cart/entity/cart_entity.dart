@@ -4,16 +4,8 @@ class CartEntity {
   final ProductEntity product;
   int quantity;
 
-  CartEntity({
-    required this.product,
-    this.quantity = 1,
-  });
-  CartEntity copyWith({
-    int? quantity,
-  }) {
-    return CartEntity(
-      product: product,
-      quantity: quantity ?? this.quantity,
-    );
+  CartEntity({required this.product, this.quantity = 1});
+  CartEntity copyWith({int? quantity}) {
+    return CartEntity(product: product, quantity: quantity ?? this.quantity);
   }
 }

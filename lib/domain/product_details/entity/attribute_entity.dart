@@ -4,18 +4,12 @@ class AttributeEntity {
   final String name;
   final List<AttributeOptionEntity> options;
 
-  const AttributeEntity({
-    required this.name,
-    required this.options,
-  });
+  const AttributeEntity({required this.name, required this.options});
 }
 
 class AttributeOptionEntity {
   final String value;
   final VariationEntity variation;
 
-  const AttributeOptionEntity({
-    required this.value,
-    required this.variation,
-  });
+  const AttributeOptionEntity({required this.value, required this.variation});
 }

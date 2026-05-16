@@ -2,10 +2,7 @@ import 'package:fork_up/data/product_details/model/variation_model.dart';
 import 'package:fork_up/domain/product_details/entity/attribute_entity.dart';
 
 class AttributeModel extends AttributeEntity {
-  const AttributeModel({
-    required super.name,
-    required super.options,
-  });
+  const AttributeModel({required super.name, required super.options});
 
   factory AttributeModel.fromJson(Map<String, dynamic> json) {
     return AttributeModel(
@@ -18,10 +15,7 @@ class AttributeModel extends AttributeEntity {
 }
 
 class AttributeOptionModel extends AttributeOptionEntity {
-  const AttributeOptionModel({
-    required super.value,
-    required super.variation,
-  });
+  const AttributeOptionModel({required super.value, required super.variation});
 
   factory AttributeOptionModel.fromJson(Map<String, dynamic> json) {
     return AttributeOptionModel(

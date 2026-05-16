@@ -8,7 +8,6 @@ import 'package:fork_up/domain/whole_sale/repository/get_products_repo.dart';
 import 'package:fork_up/domain/whole_sale/use_case/get_products_use_case.dart';
 
 class WholeSaleNotifier extends AsyncNotifier<List<ProductEntity>> {
-
   int currentPage = 1;
 
   bool isLoadingMore = false;
@@ -26,15 +25,10 @@ class WholeSaleNotifier extends AsyncNotifier<List<ProductEntity>> {
     return [];
   }
 
-  Future<void> getProducts({
-    int? categoryId,
-    int? subCategoryId,
-  }) async {
-
+  Future<void> getProducts({int? categoryId, int? subCategoryId}) async {
     state = const AsyncLoading();
 
     try {
-
       currentCategoryId = categoryId;
 
       currentSubCategoryId = subCategoryId;
@@ -53,18 +47,13 @@ class WholeSaleNotifier extends AsyncNotifier<List<ProductEntity>> {
 
       hasMore = products.length == 15;
 
-      state = AsyncData(
-        List.from(allProducts),
-      );
-
+      state = AsyncData(List.from(allProducts));
     } catch (e, stack) {
-
       state = AsyncError(e, stack);
     }
   }
 
   Future<void> loadMore() async {
-
     if (isLoadingMore || !hasMore) {
       return;
     }
@@ -74,9 +63,7 @@ class WholeSaleNotifier extends AsyncNotifier<List<ProductEntity>> {
     currentPage++;
 
     try {
-
-      final useCase =
-      ref.read(getProductsUseCaseProvider);
+      final useCase = ref.read(getProductsUseCaseProvider);
 
       final products = await useCase(
         page: currentPage,
@@ -85,20 +72,13 @@ class WholeSaleNotifier extends AsyncNotifier<List<ProductEntity>> {
       );
 
       if (products.isEmpty) {
-
         hasMore = false;
-
       } else {
-
         allProducts.addAll(products);
       }
 
-      state = AsyncData(
-        List.from(allProducts),
-      );
-
+      state = AsyncData(List.from(allProducts));
     } catch (e, stack) {
-
       state = AsyncError(e, stack);
     }
 
@@ -106,26 +86,16 @@ class WholeSaleNotifier extends AsyncNotifier<List<ProductEntity>> {
   }
 }
 
-final getProductsDataSourceProvider =
-Provider<GetProductsRemoteDataSource>((ref) {
-
-  return GetProductsRemoteDataSourceImpl(
-    ref.read(dioProvider),
-  );
+final getProductsDataSourceProvider = Provider<GetProductsRemoteDataSource>((
+  ref,
+) {
+  return GetProductsRemoteDataSourceImpl(ref.read(dioProvider));
 });
 
-final getProductsRepoProvider =
-Provider<GetProductsRepo>((ref) {
-
-  return GetProductsRepoImpl(
-    ref.read(getProductsDataSourceProvider),
-  );
+final getProductsRepoProvider = Provider<GetProductsRepo>((ref) {
+  return GetProductsRepoImpl(ref.read(getProductsDataSourceProvider));
 });
 
-final getProductsUseCaseProvider =
-Provider<GetProductsUseCase>((ref) {
-
-  return GetProductsUseCase(
-    ref.read(getProductsRepoProvider),
-  );
+final getProductsUseCaseProvider = Provider<GetProductsUseCase>((ref) {
+  return GetProductsUseCase(ref.read(getProductsRepoProvider));
 });

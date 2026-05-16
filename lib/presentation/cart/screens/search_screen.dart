@@ -12,6 +12,7 @@ import 'package:fork_up/presentation/shared/provider/recently_viewed_provider.da
 import 'package:fork_up/presentation/shared/widgets/stack_list_widget.dart';
 import 'package:fork_up/presentation/shared/widgets/product_grid_widget.dart';
 import 'package:fork_up/presentation/wish_list/provider/wish_list_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -42,7 +43,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(left: 24,right: 24,bottom: 24,top: 5),
+        padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24, top: 5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -97,158 +98,165 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             Expanded(
               child: SingleChildScrollView(
                 child: searchState.when(
-                    data: (data) {
-                      if(data.isEmpty){
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 24,),
-                            child: Center(
-                              child: Column(
-                                children: [
-                                  Image.asset(AppImages.illustration),
-                                  SizedBox(height: 20),
-                                  Text(
-                                    "We couldn't find any result!",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  SizedBox(height: 12),
-                                  Text(
-                                    "The product you are trying to search for is not\ncurrently available, We selected some other\noptions that you may like",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400,
-                                      color: AppColors.lightGray,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 20,bottom: 12),
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          'Recently Viewed',
-                                          style: TextStyle(
-                                            fontSize: width * 0.04,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  recentlyViewedState.when(
-                                    data: (data) {
-                                      if(data.isEmpty){
-                                        return SizedBox();
-                                      }
-                                      return StackListWidget(
-                                        scrollDirection: Axis.horizontal,
-                                        products: data,
-                                      );
-                                    },
-                                    error: (error, stack) {
-                                      return Center(
-                                        child: Text(error.toString()),
-                                      );
-                                    },
-                                    loading: () {
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    },
-
-                                  ),
-                                ],
+                  data: (data) {
+                    if (data.isEmpty) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 24),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Image.asset(AppImages.illustration),
+                              SizedBox(height: 20),
+                              Text(
+                                "We couldn't find any result!",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
+                              SizedBox(height: 12),
+                              Text(
+                                "The product you are trying to search for is not\ncurrently available, We selected some other\noptions that you may like",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.lightGray,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 20,
+                                  bottom: 12,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Recently Viewed',
+                                      style: TextStyle(
+                                        fontSize: width * 0.04,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              recentlyViewedState.when(
+                                data: (data) {
+                                  if (data.isEmpty) {
+                                    return SizedBox();
+                                  }
+                                  return StackListWidget(
+                                    scrollDirection: Axis.horizontal,
+                                    products: data,
+                                  );
+                                },
+                                error: (error, stack) {
+                                  return Center(child: Text(error.toString()));
+                                },
+                                loading: () {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                    return ProductGridWidget(
+                      items: data,
+                      image: (product) => product.thumbnail,
+                      name: (product) => product.name,
+                      price: (product) => product.priceAfterDiscount,
+                      favourite: (product) {
+                        final isInWishlist = wishListState.any(
+                          (e) => e.id == product.id,
+                        );
+                        return isInWishlist
+                            ? SvgPicture.asset(AppIcons.likeFilled)
+                            : SvgPicture.asset(AppIcons.like);
+                      },
+                      add: (product) {
+                        final isInCart =
+                            cartState.value?.any(
+                              (e) => e.product.id == product.id,
+                            ) ??
+                            false;
+                        return isInCart
+                            ? SvgPicture.asset(AppIcons.check, height: 34)
+                            : SvgPicture.asset(AppIcons.add);
+                      },
+
+                      onAdd: (product) async {
+                        final cartNotifier = ref.read(cartProvider.notifier);
+                        final messenger = ScaffoldMessenger.of(context);
+
+                        if (!cartNotifier.isInCart(product)) {
+                          await cartNotifier.addToCart(product);
+
+                          if (!context.mounted) return;
+
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text('Product added to cart'),
+                              backgroundColor: Colors.green,
+                              duration: Duration(seconds: 2),
                             ),
                           );
                         }
-                      return ProductGridWidget(
-                        items: data,
-                        image: (product) => product.thumbnail,
-                        name: (product) => product.name,
-                        price: (product) => product.priceAfterDiscount,
-                        favourite: (product) {
-                          final isInWishlist =
-                          wishListState.any(
-                                (e) => e.id == product.id,
-                          );
-                          return isInWishlist?
-                          SvgPicture.asset(AppIcons.likeFilled)
-                              : SvgPicture.asset(AppIcons.like);
+                      },
 
-                        },
-                        add: (product) {
-                          final isInCart =
-                              cartState.value?.any(
-                                    (e) => e.product.id == product.id,
-                              ) ?? false;
-                          return isInCart
-                              ? SvgPicture.asset(AppIcons.check,height: 34,)
-                              : SvgPicture.asset(AppIcons.add);
-                        },
+                      onTap: (product) {
+                        ref.read(recentlyViewedProvider.notifier).add(product);
 
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                ProductDetailsScreen(product: product),
+                          ),
+                        );
+                      },
+                      onLike: (product) async {
+                        final isExist = ref
+                            .read(wishlistProvider.notifier)
+                            .isInWishlist(product);
+                        final prefs = await SharedPreferences.getInstance();
+                        if (!context.mounted) return;
+                        final token = prefs.getString("token");
 
-                        onAdd: (product) async {
-                          final cartNotifier = ref.read(cartProvider.notifier);
-                          final messenger = ScaffoldMessenger.of(context);
-
-                          if (!cartNotifier.isInCart(product)) {
-
-                            await cartNotifier.addToCart(product);
-
-                            if (!context.mounted) return;
-
-                            messenger.showSnackBar(
-                              SnackBar(
-                                content: Text('Product added to cart'),
-                                backgroundColor: Colors.green,
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
-                          }
-                        },
-
-                        onTap: (product) {
-                          ref.read(recentlyViewedProvider.notifier).add(product);
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ProductDetailsScreen(product: product,),
+                        if (token == null || token.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Please login first'),
+                              backgroundColor: Colors.red,
                             ),
                           );
-                        },
-                        onLike: (product) {
-                          final isExist = ref
-                              .read(wishlistProvider.notifier)
-                              .isInWishlist(product);
-                          ref.read(wishlistProvider.notifier).toggle(product);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  isExist
-                                      ? 'Removed from wishlist'
-                                      : 'Added to wishlist',
-                                ),
-                                duration: Duration(seconds: 1),
-                              )
-                          );
-                        },
-                      );
-                    },
-                  error: (error, stack) {
-                    return Center(
-                      child: Text(error.toString()),
+                          return;
+                        }
+                        ref.read(wishlistProvider.notifier).toggle(product);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              isExist
+                                  ? 'Removed from wishlist'
+                                  : 'Added to wishlist',
+                            ),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      },
                     );
+                  },
+                  error: (error, stack) {
+                    return Center(child: Text(error.toString()));
                   },
                   loading: () {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return const Center(child: CircularProgressIndicator());
                   },
-                )
+                ),
               ),
             ),
           ],

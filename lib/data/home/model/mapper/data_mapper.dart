@@ -10,10 +10,8 @@ extension DataMapper on Data {
       bannerImage: bannerImage,
       cartCount: cartCount,
       categories: categories.map((e) => e.toEntity()).toList(),
-      newArrivalProducts:
-      newArrivalProducts.map((e) => e.toEntity()).toList(),
-      bestSellers:
-      bestSellers.map((e) => e.toEntity()).toList(),
+      newArrivalProducts: newArrivalProducts.map((e) => e.toEntity()).toList(),
+      bestSellers: bestSellers.map((e) => e.toEntity()).toList(),
       partners: partners.map((e) => e.toEntity()).toList(),
       offers: offers.map((e) => e.toEntity()).toList(),
     );

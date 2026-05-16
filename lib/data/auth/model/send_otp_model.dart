@@ -14,9 +14,7 @@ class SendOtpModel extends SendOtpEntity {
       status: json['status'],
       message: json['msg'],
       otp: json['otp'].toString(),
-      user: json['data'] != null
-          ? UserModel.fromJson(json['data'])
-          : null,
+      user: json['data'] != null ? UserModel.fromJson(json['data']) : null,
     );
   }
 }

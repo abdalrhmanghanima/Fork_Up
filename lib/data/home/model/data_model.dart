@@ -38,9 +38,7 @@ class Data {
       partners: (json['partners'] as List)
           .map((e) => Partner.fromJson(e))
           .toList(),
-      offers: (json['offers'] as List)
-          .map((e) => Offer.fromJson(e))
-          .toList(),
+      offers: (json['offers'] as List).map((e) => Offer.fromJson(e)).toList(),
     );
   }
 }

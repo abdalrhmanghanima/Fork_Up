@@ -8,4 +8,7 @@ abstract class AuthRepo {
     required String firstName,
     required String lastName,
   });
+  Future<void> logout();
+  Future<void> storeFcmToken();
+  Future<void> removeToken();
 }

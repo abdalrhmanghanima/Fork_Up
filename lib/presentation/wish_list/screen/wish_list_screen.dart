@@ -12,7 +12,7 @@ class WishListScreen extends ConsumerWidget {
   const WishListScreen({super.key});
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
     final width = size.width;
     final wishListState = ref.watch(wishlistProvider);
@@ -29,85 +29,85 @@ class WishListScreen extends ConsumerWidget {
         title: const Text("Wish List"),
         centerTitle: true,
       ),
-      body: wishListState.isEmpty?
-         Center(child: Text("Empty"),):
-      SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              ProductGridWidget(
-                items: wishListState,
-                image: (item) => item.thumbnail,
-                name: (item) => item.name,
-                price: (item) => item.priceAfterDiscount,
-                favourite: (product) {
-                  final isInWishlist =
-                  wishListState.any(
-                        (e) => e.id == product.id,
-                  );
-                 return isInWishlist?
-                  SvgPicture.asset(AppIcons.likeFilled)
-                      : SvgPicture.asset(AppIcons.like);
+      body: wishListState.isEmpty
+          ? Center(child: Text("There is no products in WishList"))
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    ProductGridWidget(
+                      items: wishListState,
+                      image: (item) => item.thumbnail,
+                      name: (item) => item.name,
+                      price: (item) => item.priceAfterDiscount,
+                      favourite: (product) {
+                        final isInWishlist = wishListState.any(
+                          (e) => e.id == product.id,
+                        );
+                        return isInWishlist
+                            ? SvgPicture.asset(AppIcons.likeFilled)
+                            : SvgPicture.asset(AppIcons.like);
+                      },
+                      add: (product) {
+                        final isInCart =
+                            cartState.value?.any(
+                              (e) => e.product.id == product.id,
+                            ) ??
+                            false;
+                        return isInCart
+                            ? SvgPicture.asset(AppIcons.check, height: 34)
+                            : SvgPicture.asset(AppIcons.add);
+                      },
+                      onLike: (product) {
+                        final isExist = ref
+                            .read(wishlistProvider.notifier)
+                            .isInWishlist(product);
+                        ref.read(wishlistProvider.notifier).toggle(product);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              isExist
+                                  ? 'Removed from wishlist'
+                                  : 'Added to wishlist',
+                            ),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                      onAdd: (product) async {
+                        final cartNotifier = ref.read(cartProvider.notifier);
+                        final messenger = ScaffoldMessenger.of(context);
 
-                },
-                add: (product){
-                  final isInCart =
-                      cartState.value?.any(
-                            (e) => e.product.id == product.id,
-                      ) ?? false;
-                  return isInCart
-                      ? SvgPicture.asset(AppIcons.check, height: 34,)
-                      : SvgPicture.asset(AppIcons.add);
-                },
-                onLike: (product) {
-                  final isExist = ref
-                      .read(wishlistProvider.notifier)
-                      .isInWishlist(product);
-                  ref.read(wishlistProvider.notifier).toggle(product);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          isExist
-                              ? 'Removed from wishlist'
-                              : 'Added to wishlist',
-                        ),
-                        duration: Duration(seconds: 1),
-                      )
-                  );
-                },
-                onAdd: (product) async {
-                  final cartNotifier = ref.read(cartProvider.notifier);
-                  final messenger = ScaffoldMessenger.of(context);
+                        if (!cartNotifier.isInCart(product)) {
+                          await cartNotifier.addToCart(product);
 
-                  if (!cartNotifier.isInCart(product)) {
-                    await cartNotifier.addToCart(product);
+                          if (!context.mounted) return;
 
-                    if (!context.mounted) return;
-
-                    messenger.showSnackBar(
-                      SnackBar(
-                        content: Text('Product added to cart'),
-                        backgroundColor: Colors.green,
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                  }
-                },
-                onTap: (product) {
-                  ref.read(recentlyViewedProvider.notifier).add(product);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ProductDetailsScreen(product: product,),
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text('Product added to cart'),
+                              backgroundColor: Colors.green,
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      },
+                      onTap: (product) {
+                        ref.read(recentlyViewedProvider.notifier).add(product);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                ProductDetailsScreen(product: product),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

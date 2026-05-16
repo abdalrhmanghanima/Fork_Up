@@ -10,6 +10,7 @@ import 'package:fork_up/presentation/shared/provider/recently_viewed_provider.da
 import 'package:fork_up/presentation/shared/widgets/product_grid_widget.dart';
 import 'package:fork_up/presentation/whole_sale/provider/whole_sale_provider.dart';
 import 'package:fork_up/presentation/wish_list/provider/wish_list_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CategoriesDetailsScreen extends ConsumerStatefulWidget {
   final CategoryDetailsArgs arguments;
@@ -30,26 +31,19 @@ class _CategoriesDetailsScreenState
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-
-      final notifier =
-      ref.read(wholeSaleProvider.notifier);
+      final notifier = ref.read(wholeSaleProvider.notifier);
 
       if (widget.arguments.subCategories != null &&
           widget.arguments.subCategories!.isNotEmpty) {
-
         notifier.getProducts(
-          subCategoryId:
-          widget.arguments.subCategories![0].id,
+          subCategoryId: widget.arguments.subCategories![0].id,
         );
-
       } else {
-
-        notifier.getProducts(
-          categoryId: widget.arguments.id,
-        );
+        notifier.getProducts(categoryId: widget.arguments.id);
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -78,7 +72,7 @@ class _CategoriesDetailsScreenState
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(left:24,right: 24,bottom: 24),
+          padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
           child: Column(
             children: [
               SizedBox(
@@ -98,15 +92,13 @@ class _CategoriesDetailsScreenState
 
                     return GestureDetector(
                       onTap: () {
-
                         setState(() {
                           selectedIndex = index;
                         });
 
-                        ref.read(wholeSaleProvider.notifier)
-                            .getProducts(
-                          subCategoryId: subCategory.id,
-                        );
+                        ref
+                            .read(wholeSaleProvider.notifier)
+                            .getProducts(subCategoryId: subCategory.id);
                       },
 
                       child: Container(
@@ -143,7 +135,6 @@ class _CategoriesDetailsScreenState
               SizedBox(height: 20),
               wholeSaleState.when(
                 data: (data) {
-
                   return ProductGridWidget(
                     items: data,
 
@@ -164,7 +155,9 @@ class _CategoriesDetailsScreenState
 
                     add: (item) {
                       final isInCart =
-                          cartState.value?.any((e) => e.product.id == item.id) ??
+                          cartState.value?.any(
+                            (e) => e.product.id == item.id,
+                          ) ??
                           false;
                       return isInCart
                           ? SvgPicture.asset(AppIcons.check, height: 34)
@@ -197,15 +190,30 @@ class _CategoriesDetailsScreenState
                         ),
                       );
                     },
-                    onLike: (item) {
+                    onLike: (product) async {
                       final isExist = ref
                           .read(wishlistProvider.notifier)
-                          .isInWishlist(item);
-                      ref.read(wishlistProvider.notifier).toggle(item);
+                          .isInWishlist(product);
+                      final prefs = await SharedPreferences.getInstance();
+                      if (!context.mounted) return;
+                      final token = prefs.getString("token");
+
+                      if (token == null || token.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Please login first'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
+                      ref.read(wishlistProvider.notifier).toggle(product);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            isExist ? 'Removed from wishlist' : 'Added to wishlist',
+                            isExist
+                                ? 'Removed from wishlist'
+                                : 'Added to wishlist',
                           ),
                           duration: Duration(seconds: 1),
                         ),

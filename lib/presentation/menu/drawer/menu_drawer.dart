@@ -4,13 +4,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
 import 'package:fork_up/domain/categories/arguments/categories_details_arguments.dart';
+import 'package:fork_up/presentation/auth/provider/chek_login/check_login_provider.dart';
 import 'package:fork_up/presentation/best_seller/screen/best_seller_screen.dart';
 import 'package:fork_up/presentation/categories/provider/categories_provider.dart';
 import 'package:fork_up/presentation/categories/screen/categories_details_screen.dart';
 import 'package:fork_up/presentation/menu/provider/navigation_provider.dart';
 import 'package:fork_up/presentation/menu/widget/list_tile_widget.dart';
+import 'package:fork_up/presentation/menu/widget/sign_out_dialog.dart';
 import 'package:fork_up/presentation/new_arrivals/screen/new_arrivals_screen.dart';
 import 'package:fork_up/presentation/offers/screen/offers_screen.dart';
+import 'package:fork_up/presentation/profile/screen/profile_screen.dart';
 import 'package:fork_up/presentation/wish_list/screen/wish_list_screen.dart';
 
 class MenuDrawer extends ConsumerStatefulWidget {
@@ -23,9 +26,9 @@ class MenuDrawer extends ConsumerStatefulWidget {
 class _MenuDrawerState extends ConsumerState<MenuDrawer> {
   bool isExpanded = false;
   Set<int> expandedCategories = {};
-
   @override
   Widget build(BuildContext context) {
+    final isLogged = ref.watch(checkLoginProvider);
     return Drawer(
       child: ListView(
         children: [
@@ -44,7 +47,17 @@ class _MenuDrawerState extends ConsumerState<MenuDrawer> {
               thickness: 0.7,
             ),
           ),
-          ListTileWidget(title: "Profile", onTap: () {}),
+          isLogged
+              ? ListTileWidget(
+                  title: "Profile",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ProfileScreen()),
+                    );
+                  },
+                )
+              : SizedBox.shrink(),
           Padding(
             padding: const EdgeInsets.only(left: 18, right: 22),
             child: Divider(
@@ -90,7 +103,7 @@ class _MenuDrawerState extends ConsumerState<MenuDrawer> {
                         );
 
                         return Padding(
-                          padding: const EdgeInsets.only(left: 12,right: 8),
+                          padding: const EdgeInsets.only(left: 12, right: 8),
                           child: ExpansionTile(
                             tilePadding: EdgeInsets.zero,
 
@@ -123,15 +136,17 @@ class _MenuDrawerState extends ConsumerState<MenuDrawer> {
                                         context,
 
                                         MaterialPageRoute(
-                                          builder: (_) => CategoriesDetailsScreen(
-                                            arguments: CategoryDetailsArgs(
-                                              id: category.id,
+                                          builder: (_) =>
+                                              CategoriesDetailsScreen(
+                                                arguments: CategoryDetailsArgs(
+                                                  id: category.id,
 
-                                              name: category.name,
+                                                  name: category.name,
 
-                                              subCategories: category.subCategory,
-                                            ),
-                                          ),
+                                                  subCategories:
+                                                      category.subCategory,
+                                                ),
+                                              ),
                                         ),
                                       );
                                     }
@@ -166,8 +181,9 @@ class _MenuDrawerState extends ConsumerState<MenuDrawer> {
 
                                                           name: category.name,
 
-                                                          subCategories: category
-                                                              .subCategory,
+                                                          subCategories:
+                                                              category
+                                                                  .subCategory,
                                                         ),
                                                   ),
                                             ),
@@ -268,10 +284,12 @@ class _MenuDrawerState extends ConsumerState<MenuDrawer> {
           ListTileWidget(
             title: "Wish List",
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => WishListScreen()),
-              );
+              isLogged
+                  ? Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => WishListScreen()),
+                    )
+                  : SizedBox.shrink();
             },
           ),
           Padding(
@@ -291,18 +309,27 @@ class _MenuDrawerState extends ConsumerState<MenuDrawer> {
               thickness: 0.7,
             ),
           ),
-          ListTile(
-            title: Text(
-              "Sign Out",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.red,
-              ),
-            ),
-            trailing: SvgPicture.asset(AppIcons.arrowRight),
-            onTap: () {},
-          ),
+          isLogged
+              ? ListTile(
+                  title: Text(
+                    "Sign Out",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.red,
+                    ),
+                  ),
+                  trailing: SvgPicture.asset(AppIcons.arrowRight),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return const SignOutDialog();
+                      },
+                    );
+                  },
+                )
+              : SizedBox.shrink(),
           Padding(
             padding: const EdgeInsets.only(left: 18, right: 22),
             child: Divider(

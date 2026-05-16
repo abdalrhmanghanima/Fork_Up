@@ -9,13 +9,10 @@ import 'package:fork_up/presentation/cart/providers/cart_provider.dart';
 class CartItemWidget extends ConsumerWidget {
   final CartEntity item;
 
-  const CartItemWidget({
-    super.key,
-    required this.item,
-  });
+  const CartItemWidget({super.key, required this.item});
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final product = item.product;
 
     return Container(
@@ -66,7 +63,9 @@ class CartItemWidget extends ConsumerWidget {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        ref.read(cartProvider.notifier).decreaseQuantity(item.product);
+                        ref
+                            .read(cartProvider.notifier)
+                            .decreaseQuantity(item.product);
                       },
                       child: Container(
                         padding: const EdgeInsets.all(6),
@@ -74,7 +73,11 @@ class CartItemWidget extends ConsumerWidget {
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.grey.shade300),
                         ),
-                        child:  SvgPicture.asset(AppIcons.minusRounded,height: 20,width: 20,),
+                        child: SvgPicture.asset(
+                          AppIcons.minusRounded,
+                          height: 20,
+                          width: 20,
+                        ),
                       ),
                     ),
 
@@ -87,7 +90,9 @@ class CartItemWidget extends ConsumerWidget {
                     const SizedBox(width: 12),
                     GestureDetector(
                       onTap: () {
-                        ref.read(cartProvider.notifier).increaseQuantity(item.product);
+                        ref
+                            .read(cartProvider.notifier)
+                            .increaseQuantity(item.product);
                       },
                       child: Container(
                         padding: const EdgeInsets.all(6),
@@ -95,7 +100,11 @@ class CartItemWidget extends ConsumerWidget {
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.grey.shade300),
                         ),
-                        child: SvgPicture.asset(AppIcons.plusRounded,height: 20,width: 20,),
+                        child: SvgPicture.asset(
+                          AppIcons.plusRounded,
+                          height: 20,
+                          width: 20,
+                        ),
                       ),
                     ),
                   ],

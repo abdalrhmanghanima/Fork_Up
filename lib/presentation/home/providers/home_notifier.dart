@@ -19,23 +19,17 @@ class HomeNotifier extends AsyncNotifier<HomeEntity> {
     return await useCase();
   }
 }
-final homeRemoteDataSourceProvider =
-Provider<CategoriesRemoteDataSource>((ref) {
-  return HomeRemoteDataSourceImpl(
-    ref.read(dioProvider),
-  );
+
+final homeRemoteDataSourceProvider = Provider<CategoriesRemoteDataSource>((
+  ref,
+) {
+  return HomeRemoteDataSourceImpl(ref.read(dioProvider));
 });
 
-final homeRepoProvider =
-Provider<CategoriesRepo>((ref) {
-  return HomeRepositoryImpl(
-    ref.read(homeRemoteDataSourceProvider),
-  );
+final homeRepoProvider = Provider<CategoriesRepo>((ref) {
+  return HomeRepositoryImpl(ref.read(homeRemoteDataSourceProvider));
 });
 
-final getHomeDataUseCaseProvider =
-Provider<GetHomeDataUseCase>((ref) {
-  return GetHomeDataUseCase(
-    ref.read(homeRepoProvider),
-  );
+final getHomeDataUseCaseProvider = Provider<GetHomeDataUseCase>((ref) {
+  return GetHomeDataUseCase(ref.read(homeRepoProvider));
 });

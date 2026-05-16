@@ -8,7 +8,7 @@ class CustomTextField extends StatefulWidget {
     required this.controller,
     required this.label,
     this.textInputType,
-    required this.hintText,
+    this.hintText,
     this.vertical,
     this.horizontal,
     required this.isPassword,
@@ -17,7 +17,7 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
   final String label;
   final TextInputType? textInputType;
-  final String hintText;
+  final String? hintText;
   final double? vertical;
   final double? horizontal;
   final bool isPassword;
@@ -56,7 +56,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         SizedBox(height: 8),
         TextFormField(
           validator: (value) {
-            if(value==null||value.isEmpty){
+            if (value == null || value.isEmpty) {
               return "please fill ${widget.label}";
             }
             return null;
@@ -72,7 +72,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             fontWeight: FontWeight.w500,
           ),
           decoration: InputDecoration(
-            hintText: widget.hintText,
+            hintText: widget.hintText ?? "",
             hintStyle: TextStyle(
               color: AppColors.lightGray,
               fontSize: 14,

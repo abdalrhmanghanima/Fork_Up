@@ -4,8 +4,5 @@ class BuyItTogetherEntity {
   final int buyTogetherId;
   final List<RelatedProductEntity> products;
 
-  BuyItTogetherEntity({
-    required this.buyTogetherId,
-    required this.products,
-  });
+  BuyItTogetherEntity({required this.buyTogetherId, required this.products});
 }

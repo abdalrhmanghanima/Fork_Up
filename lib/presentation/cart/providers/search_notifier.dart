@@ -11,7 +11,7 @@ class SearchNotifier extends AsyncNotifier<List<ProductEntity>> {
   List<ProductEntity> allProducts = [];
   @override
   Future<List<ProductEntity>> build() async {
-    final useCase= ref.read(searchUseCaseProvider);
+    final useCase = ref.read(searchUseCaseProvider);
     allProducts = await useCase.getAllProducts();
     return [];
   }

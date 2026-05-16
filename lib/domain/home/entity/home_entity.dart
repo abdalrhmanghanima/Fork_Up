@@ -11,6 +11,6 @@ class HomeEntity {
     required this.data,
     required this.msg,
     required this.status,
-    required this.bestSellers
+    required this.bestSellers,
   });
 }

@@ -5,11 +5,7 @@ class CategoryButton extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
 
-  const CategoryButton({
-    super.key,
-    required this.title,
-    required this.onTap,
-  });
+  const CategoryButton({super.key, required this.title, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +15,7 @@ class CategoryButton extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(right: 7),
 
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 8,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
 
         decoration: BoxDecoration(
           color: AppColors.blue,

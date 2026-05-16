@@ -1,4 +1,5 @@
 import 'package:fork_up/domain/home/entity/category_entity.dart';
+
 class CategoryModel extends CategoryEntity {
   CategoryModel({
     required super.id,
@@ -15,9 +16,7 @@ class CategoryModel extends CategoryEntity {
       slug: json['slug'],
       icon: json['icon'],
       subCategory: List<CategoryEntity>.from(
-        (json['sub_category'] as List).map(
-              (e) => CategoryModel.fromJson(e),
-        ),
+        (json['sub_category'] as List).map((e) => CategoryModel.fromJson(e)),
       ),
     );
   }

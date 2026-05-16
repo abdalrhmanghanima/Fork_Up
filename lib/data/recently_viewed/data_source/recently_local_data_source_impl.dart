@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:fork_up/data/home/model/product_model.dart';
 import 'package:fork_up/data/recently_viewed/data_source/recently_local_data_source.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 class RecentlyViewedLocalDataSourceImpl
     implements RecentlyViewedLocalDataSource {
   final SharedPreferences prefs;
@@ -18,9 +19,7 @@ class RecentlyViewedLocalDataSourceImpl
 
     final List decoded = jsonDecode(jsonString);
 
-    return decoded
-        .map((e) => Product.fromJson(e))
-        .toList();
+    return decoded.map((e) => Product.fromJson(e)).toList();
   }
 
   @override

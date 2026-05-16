@@ -3,9 +3,6 @@ import 'package:fork_up/domain/home/entity/partner_entity.dart';
 
 extension PartnerMapper on Partner {
   PartnerEntity toEntity() {
-    return PartnerEntity(
-      id: id,
-      image: image,
-    );
+    return PartnerEntity(id: id, image: image);
   }
 }

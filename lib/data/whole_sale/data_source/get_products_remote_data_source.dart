@@ -4,5 +4,6 @@ abstract class GetProductsRemoteDataSource {
   Future<List<Product>> getProducts({
     required int page,
     int? categoryId,
-    int? subCategoryId,});
+    int? subCategoryId,
+  });
 }

@@ -9,7 +9,8 @@ class GetProductsUseCase {
   Future<List<ProductEntity>> call({
     required int page,
     int? categoryId,
-    int? subCategoryId,}) {
+    int? subCategoryId,
+  }) {
     return productRepo.getProducts(
       page: page,
       categoryId: categoryId,

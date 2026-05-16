@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
 import 'package:fork_up/presentation/auth/provider/phone_provider.dart';
-import 'package:fork_up/presentation/auth/provider/send_otp_provider.dart';
+import 'package:fork_up/presentation/auth/provider/send_otp/send_otp_provider.dart';
 import 'package:fork_up/presentation/auth/screens/verification_screen.dart';
 import 'package:fork_up/presentation/auth/widgets/custom_button.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -13,7 +13,8 @@ class SignWithPhoneScreen extends ConsumerStatefulWidget {
   const SignWithPhoneScreen({super.key});
 
   @override
-  ConsumerState<SignWithPhoneScreen> createState() => _SignWithPhoneScreenState();
+  ConsumerState<SignWithPhoneScreen> createState() =>
+      _SignWithPhoneScreenState();
 }
 
 class _SignWithPhoneScreenState extends ConsumerState<SignWithPhoneScreen> {
@@ -33,33 +34,27 @@ class _SignWithPhoneScreenState extends ConsumerState<SignWithPhoneScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => VerificationScreen(
-                phone: fullPhone,
-                otp: data.otp,
-              ),
+              builder: (context) =>
+                  VerificationScreen(phone: fullPhone, otp: data.otp),
             ),
           );
         },
 
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(error.toString()),
-            ),
-          );
-
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(error.toString())));
         },
-
       );
-
     });
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
           padding: EdgeInsets.only(left: width * 0.04),
           child: GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: SvgPicture.asset(AppIcons.back)),
+            onTap: () => Navigator.pop(context),
+            child: SvgPicture.asset(AppIcons.back),
+          ),
         ),
       ),
       body: SafeArea(
@@ -77,11 +72,14 @@ class _SignWithPhoneScreenState extends ConsumerState<SignWithPhoneScreen> {
               children: [
                 GestureDetector(
                   onTap: () {},
-                  child: Text('skip',style: TextStyle(
-                    color: AppColors.lightGray,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500
-                  ),),
+                  child: Text(
+                    'skip',
+                    style: TextStyle(
+                      color: AppColors.lightGray,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
                 Text(
                   'Login or Sign Up',
@@ -123,7 +121,7 @@ class _SignWithPhoneScreenState extends ConsumerState<SignWithPhoneScreen> {
                     return null;
                   },
                   controller: phoneController,
-                  decoration:  InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Enter Your Phone',
                     hintStyle: TextStyle(
                       color: AppColors.lightGray,
@@ -131,7 +129,7 @@ class _SignWithPhoneScreenState extends ConsumerState<SignWithPhoneScreen> {
                       fontWeight: FontWeight.w500,
                     ),
                     contentPadding: EdgeInsets.symmetric(
-                      horizontal:  16,
+                      horizontal: 16,
                       vertical: 14,
                     ),
                     enabledBorder: OutlineInputBorder(
@@ -139,13 +137,14 @@ class _SignWithPhoneScreenState extends ConsumerState<SignWithPhoneScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.lightGray, width: 1.5),
+                      borderSide: BorderSide(
+                        color: AppColors.lightGray,
+                        width: 1.5,
+                      ),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     errorBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: AppColors.lightGray,
-                      ),
+                      borderSide: BorderSide(color: AppColors.lightGray),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
@@ -160,26 +159,25 @@ class _SignWithPhoneScreenState extends ConsumerState<SignWithPhoneScreen> {
                   showCountryFlag: false,
                   disableLengthCheck: true,
                   onChanged: (phone) {
-
                     fullPhone = phone.completeNumber.replaceAll('+', '');
-
                   },
                 ),
-                SizedBox(height: 40,),
+                SizedBox(height: 40),
                 Center(
-                  child: state.isLoading? const CircularProgressIndicator():
-                   CustomButton(
-                     onPressed: () {
-                       if (formKey.currentState!.validate()) {
-                         ref.read(sendOtpProvider.notifier).sendOtp(
-                           phone: fullPhone,
-                         );
-                       }
-                     },
-                       text: "Next",
-                     horizontal: 130,
-                   ),
-                )
+                  child: state.isLoading
+                      ? const CircularProgressIndicator()
+                      : CustomButton(
+                          onPressed: () {
+                            if (formKey.currentState!.validate()) {
+                              ref
+                                  .read(sendOtpProvider.notifier)
+                                  .sendOtp(phone: fullPhone);
+                            }
+                          },
+                          text: "Next",
+                          horizontal: 130,
+                        ),
+                ),
               ],
             ),
           ),

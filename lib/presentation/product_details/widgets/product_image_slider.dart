@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
 import 'package:fork_up/domain/product_details/entity/mapper/product_details_mapper.dart';
 import 'package:fork_up/domain/product_details/entity/product_details_entity.dart';
+import 'package:fork_up/presentation/auth/provider/chek_login/check_login_provider.dart';
 import 'package:fork_up/presentation/wish_list/provider/wish_list_provider.dart';
 
 class ProductImagesSlider extends ConsumerStatefulWidget {
@@ -21,8 +23,7 @@ class ProductImagesSlider extends ConsumerStatefulWidget {
       _ProductImagesSliderState();
 }
 
-class _ProductImagesSliderState
-    extends ConsumerState<ProductImagesSlider> {
+class _ProductImagesSliderState extends ConsumerState<ProductImagesSlider> {
   int currentIndex = 0;
 
   final PageController controller = PageController();
@@ -31,9 +32,7 @@ class _ProductImagesSliderState
   Widget build(BuildContext context) {
     final wishListState = ref.watch(wishlistProvider);
 
-    final isExist = wishListState.any(
-          (e) => e.id == widget.product.id,
-    );
+    final isExist = wishListState.any((e) => e.id == widget.product.id);
 
     return Stack(
       children: [
@@ -51,10 +50,18 @@ class _ProductImagesSliderState
             itemBuilder: (context, index) {
               return ClipRRect(
                 borderRadius: BorderRadius.circular(20),
-                child: Image.network(
-                  widget.images[index],
+                child: CachedNetworkImage(
+                  imageUrl: widget.images[index],
                   fit: BoxFit.cover,
                   width: double.infinity,
+                  fadeInDuration: Duration.zero,
+                  fadeOutDuration: Duration.zero,
+
+                  placeholder: (context, url) =>
+                      Container(color: Colors.grey.shade200),
+
+                  errorWidget: (context, url, error) =>
+                      Icon(Icons.image_not_supported),
                 ),
               );
             },
@@ -65,8 +72,24 @@ class _ProductImagesSliderState
           top: 10,
           right: 10,
           child: GestureDetector(
-            onTap: () {
-               ref
+            onTap: () async {
+              final isExist = ref
+                  .read(wishlistProvider.notifier)
+                  .isInWishlist(widget.product.toProduct());
+
+              final isLogged = ref.read(checkLoginProvider);
+
+              if (!isLogged) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Please login first'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+
+              ref
                   .read(wishlistProvider.notifier)
                   .toggle(widget.product.toProduct());
 
@@ -75,11 +98,9 @@ class _ProductImagesSliderState
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    isExist
-                        ? 'Removed from wishlist'
-                        : 'Added to wishlist',
+                    isExist ? 'Removed from wishlist' : 'Added to wishlist',
                   ),
-                  duration: const Duration(seconds: 1),
+                  duration: Duration(seconds: 1),
                 ),
               );
             },
@@ -100,14 +121,12 @@ class _ProductImagesSliderState
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
               widget.images.length,
-                  (index) => Container(
+              (index) => Container(
                 margin: const EdgeInsets.symmetric(horizontal: 3),
                 width: currentIndex == index ? 16 : 6,
                 height: 6,
                 decoration: BoxDecoration(
-                  color: currentIndex == index
-                      ? Colors.orange
-                      : Colors.grey,
+                  color: currentIndex == index ? Colors.orange : Colors.grey,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),

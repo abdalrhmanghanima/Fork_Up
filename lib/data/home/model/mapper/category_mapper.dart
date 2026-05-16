@@ -14,15 +14,8 @@ extension CategoryMapper on CategoryModel {
   }
 }
 
-extension CategoriesResponseMapper
-on CategoriesResponseModel {
-
+extension CategoriesResponseMapper on CategoriesResponseModel {
   CategoriesResponseEntity toEntity() {
-
-    return CategoriesResponseEntity(
-      data: data,
-      msg: msg,
-      status: status,
-    );
+    return CategoriesResponseEntity(data: data, msg: msg, status: status);
   }
 }

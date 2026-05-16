@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fork_up/core/utils/app_colors.dart';
 import 'package:fork_up/core/utils/app_icons.dart';
-import 'package:fork_up/presentation/auth/provider/create_account_provider.dart';
+import 'package:fork_up/presentation/auth/provider/chek_login/check_login_provider.dart';
+import 'package:fork_up/presentation/auth/provider/create_account/create_account_provider.dart';
 import 'package:fork_up/presentation/auth/provider/local_data_source_provider.dart';
 import 'package:fork_up/presentation/auth/provider/phone_provider.dart';
 import 'package:fork_up/presentation/auth/widgets/custom_button.dart';
 import 'package:fork_up/presentation/auth/widgets/custom_text_field.dart';
+import 'package:fork_up/presentation/profile/provider/get_profile_provider.dart';
 import 'package:fork_up/presentation/root.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
@@ -18,45 +20,45 @@ class SignUpScreen extends ConsumerStatefulWidget {
 }
 
 class _SignUpScreenState extends ConsumerState<SignUpScreen> {
-
   TextEditingController emailController = TextEditingController();
   TextEditingController fNameController = TextEditingController();
   TextEditingController lNameController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-   bool isAgreed = false;
+  bool isAgreed = false;
   void toggleAgree() {
     setState(() {
       isAgreed = !isAgreed;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     ref.listen(createAccountProvider, (previous, next) {
-
       next.whenOrNull(
-
         data: (data) async {
-
           if (data == null) return;
 
-          await ref.read(authLocalDataSourceProvider)
-              .saveToken(data.user.token);
+          if (data.user.token != null) {
+            await ref
+                .read(authLocalDataSourceProvider)
+                .saveToken(data.user.token!);
+            await ref.read(checkLoginProvider.notifier).checkLogin();
+
+            ref.invalidate(getProfileProvider);
+          }
+
+          if (!context.mounted) return;
 
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-              builder: (_) => const Root(),
-            ),
+            MaterialPageRoute(builder: (_) => const Root()),
           );
         },
 
         error: (error, stackTrace) {
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(error.toString()),
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(error.toString())));
         },
       );
     });
@@ -70,8 +72,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         leading: Padding(
           padding: EdgeInsets.only(left: width * 0.04),
           child: GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: SvgPicture.asset(AppIcons.back)),
+            onTap: () => Navigator.pop(context),
+            child: SvgPicture.asset(AppIcons.back),
+          ),
         ),
       ),
       body: SafeArea(
@@ -182,30 +185,34 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   ),
                   SizedBox(height: 45),
                   Center(
-                    child:state.isLoading?CircularProgressIndicator() :CustomButton(
-                      horizontal: 100,
-                      text: "Create Account",
-                      onPressed: () {
-                        if (!isAgreed) {
+                    child: state.isLoading
+                        ? CircularProgressIndicator()
+                        : CustomButton(
+                            horizontal: 100,
+                            text: "Create Account",
+                            onPressed: () {
+                              if (!isAgreed) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Please agree to Privacy Policy",
+                                    ),
+                                  ),
+                                );
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Please agree to Privacy Policy"),
-                            ),
-                          );
-
-                          return;
-                        }
-                        if(formKey.currentState!.validate()){
-                          ref.read(createAccountProvider.notifier).
-                          createAccount(
-                              phone: phone,
-                              firstName: fNameController.text,
-                              lastName: lNameController.text
-                          );
-                        }
-                      },
-                    ),
+                                return;
+                              }
+                              if (formKey.currentState!.validate()) {
+                                ref
+                                    .read(createAccountProvider.notifier)
+                                    .createAccount(
+                                      phone: phone,
+                                      firstName: fNameController.text,
+                                      lastName: lNameController.text,
+                                    );
+                              }
+                            },
+                          ),
                   ),
                 ],
               ),

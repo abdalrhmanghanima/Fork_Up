@@ -8,9 +8,7 @@ extension HomeMapper on HomeResponse {
       data: data.toEntity(),
       msg: msg,
       status: status,
-      bestSellers: data.bestSellers
-          .map((e) => e.toEntity())
-          .toList(),
+      bestSellers: data.bestSellers.map((e) => e.toEntity()).toList(),
     );
   }
 }

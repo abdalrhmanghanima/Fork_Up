@@ -23,7 +23,9 @@ class ProductGridWidget<T> extends StatelessWidget {
     this.onTap,
     this.onAdd,
     this.controller,
-    required this.favourite, this.onLike, required this.add,
+    required this.favourite,
+    this.onLike,
+    required this.add,
   });
 
   @override
@@ -47,7 +49,7 @@ class ProductGridWidget<T> extends StatelessWidget {
           name: name(item),
           price: price(item),
           add: add.call(item),
-          onLike: ()=> onLike?.call(item),
+          onLike: () => onLike?.call(item),
           onAdd: () => onAdd?.call(item),
           onTap: () => onTap?.call(item),
         );

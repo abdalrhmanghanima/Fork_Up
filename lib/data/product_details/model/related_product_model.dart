@@ -1,4 +1,5 @@
 import 'package:fork_up/domain/product_details/entity/related_product_entity.dart';
+
 class RelatedProductModel extends RelatedProductEntity {
   const RelatedProductModel({
     required super.id,

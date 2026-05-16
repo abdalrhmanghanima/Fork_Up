@@ -5,9 +5,5 @@ class RegisterEntity {
   final String msg;
   final int status;
 
-  RegisterEntity({
-    required this.user,
-    required this.msg,
-    required this.status,
-  });
+  RegisterEntity({required this.user, required this.msg, required this.status});
 }

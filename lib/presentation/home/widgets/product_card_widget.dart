@@ -55,9 +55,7 @@ class ProductCard extends StatelessWidget {
                         fadeOutDuration: Duration.zero,
 
                         placeholder: (context, url) =>
-                            Container(
-                              color: Colors.grey.shade200,
-                            ),
+                            Container(color: Colors.grey.shade200),
 
                         errorWidget: (context, url, error) =>
                             Icon(Icons.image_not_supported),
@@ -68,10 +66,7 @@ class ProductCard extends StatelessWidget {
                 Positioned(
                   right: 16,
                   top: 11,
-                  child: GestureDetector(
-                    onTap: onLike,
-                    child: favourite,
-                  ),
+                  child: GestureDetector(onTap: onLike, child: favourite),
                 ),
               ],
             ),
