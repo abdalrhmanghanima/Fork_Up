@@ -38,7 +38,7 @@ class OffersWidget extends ConsumerWidget {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(20),
                             child: SizedBox(
-                              height: 140,
+                              height: 150,
                               width: 350,
                               child: CachedNetworkImage(
                                 imageUrl: offer.url,

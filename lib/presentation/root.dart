@@ -22,7 +22,7 @@ class _RootState extends ConsumerState<Root> {
   void initState() {
     super.initState();
 
-    Future.microtask(() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(checkLoginProvider.notifier).checkLogin();
     });
   }

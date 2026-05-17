@@ -18,10 +18,9 @@ class SearchNotifier extends AsyncNotifier<List<ProductEntity>> {
 
   Future<void> search(String query) async {
     if (query.isEmpty) {
-      state = const AsyncData([]);
+      state =  AsyncData(allProducts);
       return;
     }
-    state = const AsyncLoading();
     try {
       final result = allProducts.where((product) {
         return product.name.toLowerCase().contains(query.toLowerCase());

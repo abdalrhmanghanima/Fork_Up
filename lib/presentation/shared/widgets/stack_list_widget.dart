@@ -30,8 +30,9 @@ class StackListWidget extends ConsumerWidget {
         ? screenWidth * 0.4
         : screenWidth * 0.25;
 
-    final cardHeight = screenWidth < 400 ? 220.0 : 240.0;
+    final cardHeight = screenWidth < 400 ? 250.0 : 270.0;
     final wishListState = ref.watch(wishlistProvider);
+    final cartState = ref.watch(cartProvider);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
@@ -43,7 +44,6 @@ class StackListWidget extends ConsumerWidget {
           separatorBuilder: (_, __) => SizedBox(width: screenWidth * 0.03),
           itemBuilder: (context, index) {
             final product = products[index];
-            final cartState = ref.watch(cartProvider);
             final isInCart =
                 cartState.value?.any((e) => e.product.id == product.id) ??
                 false;

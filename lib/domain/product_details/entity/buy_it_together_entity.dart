@@ -1,8 +1,15 @@
-import 'package:fork_up/domain/product_details/entity/related_product_entity.dart';
-
 class BuyItTogetherEntity {
-  final int buyTogetherId;
-  final List<RelatedProductEntity> products;
+  final int id;
+  final String title;
+  final String discount;
+  final List<int> productIds;
+  final List<String> productDiscounts;
 
-  BuyItTogetherEntity({required this.buyTogetherId, required this.products});
+  const BuyItTogetherEntity({
+    required this.id,
+    required this.title,
+    required this.discount,
+    required this.productIds,
+    required this.productDiscounts,
+  });
 }

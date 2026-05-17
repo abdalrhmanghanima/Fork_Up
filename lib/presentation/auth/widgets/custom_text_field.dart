@@ -12,6 +12,7 @@ class CustomTextField extends StatefulWidget {
     this.vertical,
     this.horizontal,
     required this.isPassword,
+    this.validator
   });
 
   final TextEditingController controller;
@@ -21,6 +22,7 @@ class CustomTextField extends StatefulWidget {
   final double? vertical;
   final double? horizontal;
   final bool isPassword;
+  final String? Function(String?)? validator;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -55,12 +57,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         SizedBox(height: 8),
         TextFormField(
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return "please fill ${widget.label}";
-            }
-            return null;
-          },
+          validator: widget.validator,
           obscureText: _obscureText,
           controller: widget.controller,
           keyboardType: widget.textInputType,
@@ -83,11 +80,32 @@ class _CustomTextFieldState extends State<CustomTextField> {
               vertical: widget.vertical ?? 22,
             ),
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppColors.lightGray),
+              borderSide: BorderSide(
+                color: AppColors.lightGray,
+              ),
               borderRadius: BorderRadius.circular(8),
             ),
+
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppColors.lightGray, width: 1.5),
+              borderSide: BorderSide(
+                color: AppColors.lightGray,
+                width: 1.5,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColors.lightGray,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColors.lightGray,
+                width: 1.5,
+              ),
               borderRadius: BorderRadius.circular(8),
             ),
             suffixIcon: widget.isPassword

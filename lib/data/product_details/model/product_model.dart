@@ -1,5 +1,4 @@
 import 'package:fork_up/data/product_details/model/attribute_model.dart';
-import 'package:fork_up/data/product_details/model/buy_it_together_model.dart';
 import 'package:fork_up/data/product_details/model/related_product_model.dart';
 import 'package:fork_up/domain/product_details/entity/product_details_entity.dart';
 
@@ -30,9 +29,7 @@ class ProductDetailsModel extends ProductDetailsEntity {
   // ===========================
   factory ProductDetailsModel.fromJson(Map<String, dynamic> json) {
     return ProductDetailsModel(
-      buyItTogether: (json['buy_it_together'] as List? ?? [])
-          .map((e) => BuyItTogetherModel.fromJson(e))
-          .toList(),
+      buyItTogether: [],
 
       id: json['id'] ?? 0,
 

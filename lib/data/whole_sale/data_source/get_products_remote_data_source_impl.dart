@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:fork_up/core/constants/api_const.dart';
 import 'package:fork_up/data/home/model/product_model.dart';
 import 'package:fork_up/data/whole_sale/data_source/get_products_remote_data_source.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class GetProductsRemoteDataSourceImpl implements GetProductsRemoteDataSource {
   final Dio dio;
@@ -15,9 +14,6 @@ class GetProductsRemoteDataSourceImpl implements GetProductsRemoteDataSource {
     int? categoryId,
     int? subCategoryId,
   }) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    final token = prefs.getString("token");
     final response = await dio.get(
       ApiConstants.getProducts,
       queryParameters: {
@@ -33,7 +29,6 @@ class GetProductsRemoteDataSourceImpl implements GetProductsRemoteDataSource {
       options: Options(
         headers: {
           "Accept": "application/json",
-          "Authorization": "Bearer $token",
           "Accept-Language": "en",
         },
       ),

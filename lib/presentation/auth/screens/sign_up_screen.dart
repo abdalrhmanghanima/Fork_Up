@@ -20,11 +20,14 @@ class SignUpScreen extends ConsumerStatefulWidget {
 }
 
 class _SignUpScreenState extends ConsumerState<SignUpScreen> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController fNameController = TextEditingController();
-  TextEditingController lNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController fNameController = TextEditingController();
+  final TextEditingController lNameController = TextEditingController();
+
   final formKey = GlobalKey<FormState>();
+
   bool isAgreed = false;
+
   void toggleAgree() {
     setState(() {
       isAgreed = !isAgreed;
@@ -32,8 +35,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    ref.listen(createAccountProvider, (previous, next) {
+  void initState() {
+    super.initState();
+
+    ref.listenManual(createAccountProvider, (previous, next) {
       next.whenOrNull(
         data: (data) async {
           if (data == null) return;
@@ -42,31 +47,51 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             await ref
                 .read(authLocalDataSourceProvider)
                 .saveToken(data.user.token!);
-            await ref.read(checkLoginProvider.notifier).checkLogin();
+
+            await ref
+                .read(checkLoginProvider.notifier)
+                .checkLogin();
 
             ref.invalidate(getProfileProvider);
           }
 
-          if (!context.mounted) return;
+          if (!mounted) return;
 
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const Root()),
+            MaterialPageRoute(
+              builder: (_) => const Root(),
+            ),
           );
         },
-
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(error.toString())));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error.toString()),
+            ),
+          );
         },
       );
     });
+  }
 
+  @override
+  void dispose() {
+    emailController.dispose();
+    fNameController.dispose();
+    lNameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final width = size.width;
+
     final phone = ref.watch(phoneProvider);
+
     final state = ref.watch(createAccountProvider);
+
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
@@ -91,7 +116,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Create your new\naccount',
                     style: TextStyle(
                       fontSize: 32,
@@ -99,7 +124,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       color: Colors.black,
                     ),
                   ),
-                  SizedBox(height: 8),
+
+                  const SizedBox(height: 8),
+
                   Text(
                     'Create an account to start looking for\nthe food you like',
                     style: TextStyle(
@@ -108,7 +135,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       color: AppColors.lightGray,
                     ),
                   ),
-                  SizedBox(height: 12),
+
+                  const SizedBox(height: 12),
+
                   Row(
                     children: [
                       Expanded(
@@ -119,9 +148,22 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           hintText: 'FName',
                           horizontal: 8,
                           vertical: 20,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return "First name is required";
+                            }
+
+                            if (value.trim().length < 2) {
+                              return "Enter valid first name";
+                            }
+
+                            return null;
+                          },
                         ),
                       ),
-                      SizedBox(width: 12),
+
+                      const SizedBox(width: 12),
+
                       Expanded(
                         child: CustomTextField(
                           isPassword: false,
@@ -130,42 +172,77 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           hintText: 'LName',
                           horizontal: 8,
                           vertical: 20,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return "Last name is required";
+                            }
+
+                            if (value.trim().length < 2) {
+                              return "Enter valid last name";
+                            }
+
+                            return null;
+                          },
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 18),
+
+                  const SizedBox(height: 18),
+
                   CustomTextField(
                     controller: emailController,
                     label: "Email Address",
                     hintText: "Enter Your Email",
                     isPassword: false,
+                    textInputType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Email is required";
+                      }
+
+                      if (!RegExp(
+                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                      ).hasMatch(value.trim())) {
+                        return "Enter valid email";
+                      }
+
+                      return null;
+                    },
                   ),
-                  SizedBox(height: 20),
+
+                  const SizedBox(height: 20),
+
                   Row(
                     children: [
                       GestureDetector(
-                        onTap: () => toggleAgree(),
+                        onTap: toggleAgree,
                         child: Container(
                           width: 25,
                           height: 25,
                           decoration: BoxDecoration(
-                            color: isAgreed ? AppColors.yellow : Colors.white,
+                            color:
+                            isAgreed
+                                ? AppColors.yellow
+                                : Colors.white,
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: isAgreed
+                          child:
+                          isAgreed
                               ? Padding(
-                                  padding: const EdgeInsets.all(2.0),
-                                  child: SvgPicture.asset(
-                                    AppIcons.checkWhite,
-                                    fit: BoxFit.fitWidth,
-                                  ),
-                                )
+                            padding: const EdgeInsets.all(2.0),
+                            child: SvgPicture.asset(
+                              AppIcons.checkWhite,
+                              fit: BoxFit.fitWidth,
+                            ),
+                          )
                               : null,
                         ),
                       ),
-                      SizedBox(width: 10),
-                      Text(
+
+                      const SizedBox(width: 10),
+
+                      const Text(
                         'I Agree with ',
                         style: TextStyle(
                           fontSize: 14,
@@ -173,6 +250,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           color: Colors.black,
                         ),
                       ),
+
                       Text(
                         'Privacy Policy',
                         style: TextStyle(
@@ -183,36 +261,42 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 45),
-                  Center(
-                    child: state.isLoading
-                        ? CircularProgressIndicator()
-                        : CustomButton(
-                            horizontal: 100,
-                            text: "Create Account",
-                            onPressed: () {
-                              if (!isAgreed) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      "Please agree to Privacy Policy",
-                                    ),
-                                  ),
-                                );
 
-                                return;
-                              }
-                              if (formKey.currentState!.validate()) {
-                                ref
-                                    .read(createAccountProvider.notifier)
-                                    .createAccount(
-                                      phone: phone,
-                                      firstName: fNameController.text,
-                                      lastName: lNameController.text,
-                                    );
-                              }
-                            },
-                          ),
+                  const SizedBox(height: 45),
+
+                  Center(
+                    child:
+                    state.isLoading
+                        ? const CircularProgressIndicator()
+                        : CustomButton(
+                      horizontal: 100,
+                      text: "Create Account",
+                      onPressed: () {
+                        if (!isAgreed) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                "Please agree to Privacy Policy",
+                              ),
+                            ),
+                          );
+
+                          return;
+                        }
+
+                        if (formKey.currentState!.validate()) {
+                          ref
+                              .read(
+                            createAccountProvider.notifier,
+                          )
+                              .createAccount(
+                            phone: phone,
+                            firstName: fNameController.text.trim(),
+                            lastName: lNameController.text.trim(),
+                          );
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),

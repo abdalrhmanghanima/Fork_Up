@@ -12,7 +12,6 @@ import 'package:fork_up/presentation/product_details/widgets/product_details_shi
 import 'package:fork_up/presentation/shared/provider/recently_viewed_provider.dart';
 import 'package:fork_up/presentation/shared/widgets/stack_list_widget.dart';
 import 'package:fork_up/presentation/product_details/widgets/product_image_slider.dart';
-import 'package:fork_up/presentation/product_details/widgets/small_product_card.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ProductDetailsScreen extends ConsumerStatefulWidget {
@@ -66,429 +65,145 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
 
       body: productDetailsState.when(
         data: (data) {
-          return SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.06),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: width * 0.02),
-                  Center(
-                    child: ProductImagesSlider(
-                      product: data,
-                      images: data.images,
-                    ),
-                  ),
-
-                  SizedBox(height: width * 0.03),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              data.name,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: width * 0.04,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              '\$ ${data.priceBeforeDiscount}',
-                              style: TextStyle(
-                                fontSize: width * 0.04,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.yellow,
-                              ),
-                            ),
-                          ],
-                        ),
+          return RefreshIndicator(
+            color: Colors.black,
+            onRefresh: () {
+              return ref.refresh(
+                productDetailsProvider(
+                  widget.product.slug,
+                ).future,
+              );
+            },            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 0.06),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: width * 0.02),
+                    Center(
+                      child: ProductImagesSlider(
+                        product: data,
+                        images: data.images,
                       ),
-
-                      Text(
-                        '⭐ ${data.rate}',
-                        style: TextStyle(
-                          fontSize: width * 0.035,
-                          color: AppColors.darkGray,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(height: width * 0.04),
-
-                  Container(
-                    padding: EdgeInsets.all(width * 0.02),
-                    decoration: BoxDecoration(
-                      color: Color(0xFFEEB504).withValues(alpha: 0.04),
-                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Row(
+
+                    SizedBox(height: width * 0.03),
+
+                    Row(
                       children: [
-                        Text("•"),
-                        SizedBox(width: width * 0.02),
                         Expanded(
-                          child: Text(
-                            data.slug,
-                            overflow: TextOverflow.ellipsis,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                data.name,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: width * 0.04,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                '\$ ${data.priceBeforeDiscount}',
+                                style: TextStyle(
+                                  fontSize: width * 0.04,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.yellow,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Text(
+                          '⭐ ${data.rate}',
+                          style: TextStyle(
+                            fontSize: width * 0.035,
+                            color: AppColors.darkGray,
                           ),
                         ),
                       ],
                     ),
-                  ),
 
-                  SizedBox(height: width * 0.05),
-                  Divider(),
-                  SizedBox(height: width * 0.04),
+                    SizedBox(height: width * 0.04),
 
-                  Text(
-                    "Description",
-                    style: TextStyle(
-                      fontSize: width * 0.04,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-
-                  SizedBox(height: width * 0.02),
-
-                  Html(
-                    data: data.description,
-                    style: {
-                      "body": Style(
-                        fontSize: FontSize(width * 0.035),
-                        color: AppColors.lightGray,
+                    Container(
+                      padding: EdgeInsets.all(width * 0.02),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFEEB504).withValues(alpha: 0.04),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                    },
-                  ),
-
-                  SizedBox(height: width * 0.06),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Buy It Together',
-                        style: TextStyle(
-                          fontSize: width * 0.04,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        'See All',
-                        style: TextStyle(
-                          fontSize: width * 0.04,
-                          color: AppColors.yellow,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(height: width * 0.04),
-
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Row(
                         children: [
+                          Text("•"),
+                          SizedBox(width: width * 0.02),
                           Expanded(
-                            flex: 4,
-                            child: Column(
-                              children: [
-                                SmallProductCard(
-                                  image: 'assets/images/small_salmon.png',
-                                  name: 'Soly Salmon',
-                                  price: '\$ 17,230',
-                                ),
-
-                                SizedBox(height: constraints.maxWidth * 0.02),
-
-                                SvgPicture.asset(
-                                  AppIcons.plus,
-                                  height: constraints.maxWidth * 0.05,
-                                ),
-
-                                SizedBox(height: constraints.maxWidth * 0.02),
-
-                                SmallProductCard(
-                                  image: 'assets/images/small_salmon.png',
-                                  name: 'Soly Salmon',
-                                  price: '\$ 17,230',
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          SizedBox(width: constraints.maxWidth * 0.04),
-
-                          Expanded(
-                            flex: 5,
-                            child: AspectRatio(
-                              aspectRatio: 210 / 290,
-                              child: Container(
-                                padding: EdgeInsets.all(
-                                  constraints.maxWidth * 0.02,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.offWhite,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          width: constraints.maxWidth * 0.1,
-                                          height: constraints.maxWidth * 0.1,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
-                                          child: Icon(
-                                            Icons.check,
-                                            size: constraints.maxWidth * 0.05,
-                                          ),
-                                        ),
-
-                                        SizedBox(
-                                          width: constraints.maxWidth * 0.02,
-                                        ),
-
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Soly Salmon',
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      constraints.maxWidth *
-                                                      0.04,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                              Text(
-                                                '\$ 17,230',
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      constraints.maxWidth *
-                                                      0.04,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: AppColors.yellow,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    SizedBox(
-                                      height: constraints.maxWidth * 0.03,
-                                    ),
-
-                                    DropdownButtonFormField<String>(
-                                      initialValue: 'Option 1',
-                                      items:
-                                          ["Option 1", "Option 2", "Option 3"]
-                                              .map(
-                                                (e) => DropdownMenuItem(
-                                                  value: e,
-                                                  child: Text(e),
-                                                ),
-                                              )
-                                              .toList(),
-                                      onChanged: (value) {},
-                                      decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.symmetric(
-                                          horizontal:
-                                              constraints.maxWidth * 0.03,
-                                          vertical:
-                                              constraints.maxWidth * 0.025,
-                                        ),
-                                        filled: true,
-                                        fillColor: Colors.white,
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                          borderSide: BorderSide.none,
-                                        ),
-                                      ),
-                                    ),
-
-                                    SizedBox(
-                                      height: constraints.maxWidth * 0.03,
-                                    ),
-
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          width: constraints.maxWidth * 0.1,
-                                          height: constraints.maxWidth * 0.1,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
-                                        ),
-
-                                        SizedBox(
-                                          width: constraints.maxWidth * 0.02,
-                                        ),
-
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Soly Salmon',
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      constraints.maxWidth *
-                                                      0.04,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                              Text(
-                                                '\$ 17,230',
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      constraints.maxWidth *
-                                                      0.04,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: AppColors.yellow,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    Spacer(),
-
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Flexible(
-                                          child: Text(
-                                            "\$ 17,230",
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize:
-                                                  constraints.maxWidth * 0.04,
-                                              decoration:
-                                                  TextDecoration.lineThrough,
-                                              color: Colors.red,
-                                            ),
-                                          ),
-                                        ),
-                                        Flexible(
-                                          child: Text(
-                                            "\$ 17,230",
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize:
-                                                  constraints.maxWidth * 0.045,
-                                              fontWeight: FontWeight.w600,
-                                              color: AppColors.yellow,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    SizedBox(
-                                      height: constraints.maxWidth * 0.03,
-                                    ),
-
-                                    ElevatedButton.icon(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppColors.blue,
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            40,
-                                          ),
-                                        ),
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 15,
-                                          horizontal: 30,
-                                        ),
-                                      ),
-                                      onPressed: () {},
-                                      icon: SvgPicture.asset(
-                                        AppIcons.cartWhite,
-                                      ),
-                                      label: Text(
-                                        "Add to Cart",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            child: Text(
+                              data.slug,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
-                      );
-                    },
-                  ),
-
-                  SizedBox(height: width * 0.06),
-
-                  Text(
-                    'Recently Viewed',
-                    style: TextStyle(
-                      fontSize: width * 0.04,
-                      fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
 
-                  SizedBox(height: width * 0.04),
+                    SizedBox(height: width * 0.05),
+                    Divider(),
+                    SizedBox(height: width * 0.04),
 
-                  recentlyViewedState.when(
-                    data: (data) {
-                      if (data.isEmpty) {
-                        return SizedBox();
-                      }
-                      return StackListWidget(
-                        scrollDirection: Axis.horizontal,
-                        products: data,
-                      );
-                    },
-                    error: (error, stack) {
-                      return Center(child: Text(error.toString()));
-                    },
-                    loading: () {
-                      return const Center(child: CircularProgressIndicator());
-                    },
-                  ),
+                    Text(
+                      "Description",
+                      style: TextStyle(
+                        fontSize: width * 0.04,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
 
-                  SizedBox(height: 30),
-                ],
+                    SizedBox(height: width * 0.02),
+
+                    Html(
+                      data: data.description,
+                      style: {
+                        "body": Style(
+                          fontSize: FontSize(width * 0.035),
+                          color: AppColors.lightGray,
+                        ),
+                      },
+                    ),
+                    SizedBox(height: width * 0.06),
+
+                    Text(
+                      'Recently Viewed',
+                      style: TextStyle(
+                        fontSize: width * 0.04,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+
+                    SizedBox(height: width * 0.04),
+
+                    recentlyViewedState.when(
+                      data: (data) {
+                        if (data.isEmpty) {
+                          return SizedBox();
+                        }
+                        return StackListWidget(
+                          scrollDirection: Axis.horizontal,
+                          products: data,
+                        );
+                      },
+                      error: (error, stack) {
+                        return Center(child: Text(error.toString()));
+                      },
+                      loading: () {
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                    ),
+
+                    SizedBox(height: 30),
+                  ],
+                ),
               ),
             ),
           );

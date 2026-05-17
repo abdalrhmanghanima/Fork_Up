@@ -19,4 +19,12 @@ class ApiConstants {
       "https://maxim.envirogroup.io/api/v5/user/logout";
   static const String storeFcmToken =
       "https://maxim.envirogroup.io/api/v5/user/store-fcm-token";
+  static const String buyItTogether =
+      "https://maxim.envirogroup.io/api/v5/product/get_buy_it_together_products/";
+  static const String addToCart =
+      "https://maxim.envirogroup.io/api/v5/user/add-to-cart";
+  static const String clearCart =
+      "https://maxim.envirogroup.io/api/v5/user/clear-cart";
+  static const String getCart =
+      'https://maxim.envirogroup.io/api/v5/user/get-cart';
 }

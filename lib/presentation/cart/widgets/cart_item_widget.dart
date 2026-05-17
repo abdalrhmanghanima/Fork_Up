@@ -115,7 +115,7 @@ class CartItemWidget extends ConsumerWidget {
 
           IconButton(
             onPressed: () async {
-              await ref.read(cartProvider.notifier).remove(item.product);
+              await ref.read(cartProvider.notifier).remove(product.id);
 
               if (!context.mounted) return;
 

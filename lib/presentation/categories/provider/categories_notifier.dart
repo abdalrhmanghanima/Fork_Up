@@ -15,8 +15,18 @@ class CategoriesNotifier extends AsyncNotifier<CategoriesResponseEntity> {
 
   Future<CategoriesResponseEntity> getCategories() async {
     state = const AsyncLoading();
-    final useCase = ref.read(categoriesUseCaseProvider);
-    return await useCase();
+    try {
+      final useCase = ref.read(categoriesUseCaseProvider);
+
+      final data = await useCase();
+
+      state = AsyncData(data);
+
+      return data;
+    } catch (e, s) {
+      state = AsyncError(e, s);
+      rethrow;
+    }
   }
 }
 

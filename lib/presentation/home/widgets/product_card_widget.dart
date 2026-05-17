@@ -28,92 +28,127 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+
     return GestureDetector(
+      onTap: onTap,
+
       child: Container(
         margin: const EdgeInsets.only(right: 12),
-        width: 152,
+
+        width: width * 0.42,
+
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
         ),
+
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+
           children: [
             Stack(
               children: [
-                GestureDetector(
-                  onTap: onTap,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: SizedBox(
-                      height: 120,
-                      width: 147,
-                      child: CachedNetworkImage(
-                        imageUrl: image,
-                        fit: BoxFit.cover,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
 
-                        fadeInDuration: Duration.zero,
-                        fadeOutDuration: Duration.zero,
+                  child: SizedBox(
+                    height: width * 0.28,
+                    width: double.infinity,
 
-                        placeholder: (context, url) =>
-                            Container(color: Colors.grey.shade200),
+                    child: CachedNetworkImage(
+                      imageUrl: image,
+                      fit: BoxFit.cover,
 
-                        errorWidget: (context, url, error) =>
-                            Icon(Icons.image_not_supported),
+                      fadeInDuration: Duration.zero,
+                      fadeOutDuration: Duration.zero,
+
+                      placeholder: (context, url) => Container(
+                        color: Colors.grey.shade200,
+                      ),
+
+                      errorWidget: (context, url, error) =>
+                      const Icon(
+                        Icons.image_not_supported,
                       ),
                     ),
                   ),
                 ),
+
                 Positioned(
-                  right: 16,
-                  top: 11,
-                  child: GestureDetector(onTap: onLike, child: favourite),
+                  right: 12,
+                  top: 10,
+
+                  child: GestureDetector(
+                    onTap: onLike,
+                    child: favourite,
+                  ),
                 ),
               ],
             ),
 
             const SizedBox(height: 8),
 
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+
+                children: [
+                  Expanded(
+                    child: Text(
+                      name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+
+                      style: TextStyle(
+                        fontSize: width * 0.036,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 4),
-                SvgPicture.asset(AppIcons.more, width: 27),
-              ],
+
+                  const SizedBox(width: 4),
+
+                  SvgPicture.asset(
+                    AppIcons.more,
+                    width: width * 0.055,
+                  ),
+                ],
+              ),
             ),
 
             const SizedBox(height: 6),
 
-            Align(
-              alignment: Alignment.centerLeft,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+
               child: Text(
                 "\$ $price",
+
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: width * 0.038,
                   fontWeight: FontWeight.bold,
                   color: AppColors.yellow,
                 ),
               ),
             ),
 
-            const Spacer(),
+            const SizedBox(height: 10),
 
             Align(
               alignment: Alignment.bottomRight,
+
               child: GestureDetector(
                 onTap: onAdd,
+
                 child: Padding(
-                  padding: const EdgeInsets.only(right: 6),
+                  padding: const EdgeInsets.only(
+                    right: 6,
+                    bottom: 6,
+                  ),
+
                   child: add,
                 ),
               ),

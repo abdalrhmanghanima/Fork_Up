@@ -1,11 +1,11 @@
 import 'package:fork_up/domain/cart/repository/cart_repo.dart';
 
-class RemoveFromCartUseCase {
+class DecreaseQuantityUseCase {
   final CartRepository repo;
 
-  RemoveFromCartUseCase(this.repo);
+  DecreaseQuantityUseCase(this.repo);
 
   Future<void> call(int productId) async {
-    await repo.removeFromCart(productId);
+    await repo.decreaseQuantity(productId);
   }
 }

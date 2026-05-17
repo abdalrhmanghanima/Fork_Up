@@ -17,36 +17,61 @@ class SignWithPhoneScreen extends ConsumerStatefulWidget {
       _SignWithPhoneScreenState();
 }
 
-class _SignWithPhoneScreenState extends ConsumerState<SignWithPhoneScreen> {
-  TextEditingController phoneController = TextEditingController();
+class _SignWithPhoneScreenState
+    extends ConsumerState<SignWithPhoneScreen> {
+  final TextEditingController phoneController =
+  TextEditingController();
+
   final formKey = GlobalKey<FormState>();
+
   String fullPhone = '';
+
   @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final width = size.width;
-    final state = ref.watch(sendOtpProvider);
-    ref.listen(sendOtpProvider, (previous, next) {
+  void initState() {
+    super.initState();
+
+    ref.listenManual(sendOtpProvider, (previous, next) {
       next.whenOrNull(
         data: (data) {
           if (data == null) return;
+
           ref.read(phoneProvider.notifier).state = fullPhone;
+
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  VerificationScreen(phone: fullPhone, otp: data.otp),
+              builder: (context) => VerificationScreen(
+                phone: fullPhone,
+                otp: data.otp,
+              ),
             ),
           );
         },
 
         error: (error, stackTrace) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(error.toString())));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error.toString()),
+            ),
+          );
         },
       );
     });
+  }
+
+  @override
+  void dispose() {
+    phoneController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+
+    final state = ref.watch(sendOtpProvider);
+
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
@@ -57,6 +82,7 @@ class _SignWithPhoneScreenState extends ConsumerState<SignWithPhoneScreen> {
           ),
         ),
       ),
+
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(
@@ -65,13 +91,17 @@ class _SignWithPhoneScreenState extends ConsumerState<SignWithPhoneScreen> {
             right: 24,
             left: 24,
           ),
+
           child: Form(
             key: formKey,
+
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+
               children: [
                 GestureDetector(
                   onTap: () {},
+
                   child: Text(
                     'skip',
                     style: TextStyle(
@@ -81,7 +111,8 @@ class _SignWithPhoneScreenState extends ConsumerState<SignWithPhoneScreen> {
                     ),
                   ),
                 ),
-                Text(
+
+                const Text(
                   'Login or Sign Up',
                   style: TextStyle(
                     fontSize: 32,
@@ -89,7 +120,9 @@ class _SignWithPhoneScreenState extends ConsumerState<SignWithPhoneScreen> {
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(height: 8),
+
+                const SizedBox(height: 8),
+
                 Text(
                   "we'll send you an SMS with a verification code.",
                   style: TextStyle(
@@ -98,8 +131,10 @@ class _SignWithPhoneScreenState extends ConsumerState<SignWithPhoneScreen> {
                     color: AppColors.lightGray,
                   ),
                 ),
-                SizedBox(height: 50),
-                Text(
+
+                const SizedBox(height: 50),
+
+                const Text(
                   'Phone Number',
                   style: TextStyle(
                     color: Colors.black,
@@ -107,35 +142,52 @@ class _SignWithPhoneScreenState extends ConsumerState<SignWithPhoneScreen> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                SizedBox(height: 8),
+
+                const SizedBox(height: 8),
+
                 IntlPhoneField(
+                  controller: phoneController,
+                  initialCountryCode: 'EG',
+                  showCountryFlag: false,
+                  disableLengthCheck: true,
+
                   validator: (value) {
-                    if (value == null || value.number.isEmpty) {
+                    if (value == null) {
                       return 'Phone number is required';
                     }
 
-                    if (value.number.length < 10) {
-                      return 'Invalid phone number';
+                    if (value.number.trim().isEmpty) {
+                      return 'Phone number is required';
+                    }
+
+                    if (value.number.length < 6) {
+                      return 'Enter valid phone number';
                     }
 
                     return null;
                   },
-                  controller: phoneController,
+
                   decoration: InputDecoration(
                     hintText: 'Enter Your Phone',
+
                     hintStyle: TextStyle(
                       color: AppColors.lightGray,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
-                    contentPadding: EdgeInsets.symmetric(
+
+                    contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 14,
                     ),
+
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.lightGray),
+                      borderSide: BorderSide(
+                        color: AppColors.lightGray,
+                      ),
                       borderRadius: BorderRadius.circular(8),
                     ),
+
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         color: AppColors.lightGray,
@@ -143,40 +195,52 @@ class _SignWithPhoneScreenState extends ConsumerState<SignWithPhoneScreen> {
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
+
                     errorBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.lightGray),
+                      borderSide: const BorderSide(
+                        color: Colors.red,
+                      ),
                       borderRadius: BorderRadius.circular(8),
                     ),
+
                     focusedErrorBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: AppColors.lightGray,
+                      borderSide: const BorderSide(
+                        color: Colors.red,
                         width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  initialCountryCode: 'EG',
-                  showCountryFlag: false,
-                  disableLengthCheck: true,
+
                   onChanged: (phone) {
-                    fullPhone = phone.completeNumber.replaceAll('+', '');
+                    fullPhone =
+                        phone.completeNumber.replaceAll('+', '');
                   },
                 ),
-                SizedBox(height: 40),
+
+                const SizedBox(height: 40),
+
                 Center(
                   child: state.isLoading
                       ? const CircularProgressIndicator()
                       : CustomButton(
-                          onPressed: () {
-                            if (formKey.currentState!.validate()) {
-                              ref
-                                  .read(sendOtpProvider.notifier)
-                                  .sendOtp(phone: fullPhone);
-                            }
-                          },
-                          text: "Next",
-                          horizontal: 130,
-                        ),
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+
+                      if (!formKey.currentState!.validate()) {
+                        return;
+                      }
+
+                      ref
+                          .read(sendOtpProvider.notifier)
+                          .sendOtp(
+                        phone: fullPhone,
+                      );
+                    },
+
+                    text: "Next",
+                    horizontal: 130,
+                  ),
                 ),
               ],
             ),

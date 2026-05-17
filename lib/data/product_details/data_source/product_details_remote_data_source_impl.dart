@@ -17,8 +17,6 @@ class ProductDetailsRemoteDataSourceImpl
       options: Options(
         headers: {
           "Accept": "application/json",
-          "Authorization":
-              "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21heGltLmVudmlyb2dyb3VwLmlvL2FwaS92NS91c2VyL2F1dGgvbG9naW4iLCJpYXQiOjE3NzYxOTk1MzgsImV4cCI6MTc3ODc5MTUzOCwibmJmIjoxNzc2MTk5NTM4LCJqdGkiOiJ1eXF4VVczN2VlUWZvVlRTIiwic3ViIjoiNjYiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.Jm25W7q2ps4rtRzsJUcpB95Q2K3dqQ7AcAUqkIptOOI",
           "Accept-Language": "en",
         },
       ),

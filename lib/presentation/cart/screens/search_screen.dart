@@ -11,6 +11,7 @@ import 'package:fork_up/presentation/product_details/screen/product_details_scre
 import 'package:fork_up/presentation/shared/provider/recently_viewed_provider.dart';
 import 'package:fork_up/presentation/shared/widgets/stack_list_widget.dart';
 import 'package:fork_up/presentation/shared/widgets/product_grid_widget.dart';
+import 'package:fork_up/presentation/whole_sale/widget/product_grid_shimmer_widget.dart';
 import 'package:fork_up/presentation/wish_list/provider/wish_list_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -254,7 +255,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     return Center(child: Text(error.toString()));
                   },
                   loading: () {
-                    return const Center(child: CircularProgressIndicator());
+                    return const SizedBox(
+                      height: 240,
+                      child: ProductGridShimmerWidget(),
+                    );
                   },
                 ),
               ),

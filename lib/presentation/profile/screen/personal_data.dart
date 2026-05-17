@@ -23,6 +23,7 @@ class _PersonalDataState extends ConsumerState<PersonalData> {
   TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -47,135 +48,197 @@ class _PersonalDataState extends ConsumerState<PersonalData> {
         data: (data) {
           final imageUrl =
               "https://maxim.envirogroup.io/storage/app/public/${data.image}";
-          nameController.text = "${data.firstName} ${data.lastName}";
-          emailController.text = data.email ?? "no mail";
-          phoneController.text = data.phone ?? "";
-          return Padding(
-            padding: const EdgeInsets.only(left: 24, right: 24),
-            child: Column(
-              children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 20, bottom: 20),
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        CircleAvatar(
-                          radius: 60,
-                          child: ClipOval(
-                            child: image != null
-                                ? Image.file(
-                                    image,
-                                    width: 120,
-                                    height: 120,
-                                    fit: BoxFit.cover,
-                                  )
-                                : CachedNetworkImage(
-                                    imageUrl: imageUrl,
-                                    width: 120,
-                                    height: 120,
-                                    fit: BoxFit.cover,
 
-                                    errorWidget: (context, url, error) {
-                                      return Image.asset(
-                                        AppImages.user,
-                                        fit: BoxFit.cover,
-                                      );
-                                    },
+          if (nameController.text.isEmpty) {
+            nameController.text = "${data.firstName} ${data.lastName}";
+          }
 
-                                    placeholder: (context, url) {
-                                      return Shimmer.fromColors(
-                                        baseColor: Colors.grey.shade300,
-                                        highlightColor: Colors.grey.shade100,
-                                        child: Container(
-                                          width: 120,
-                                          height: 120,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.white,
-                                            shape: BoxShape.circle,
-                                          ),
+          if (emailController.text.isEmpty) {
+            emailController.text = data.email ?? "";
+          }
+
+          if (phoneController.text.isEmpty) {
+            phoneController.text = data.phone ?? "";
+          }
+
+          return Form(
+            key: formKey,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 24, right: 24),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 20, bottom: 20),
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            CircleAvatar(
+                              radius: 60,
+                              child: ClipOval(
+                                child: image != null
+                                    ? Image.file(
+                                  image,
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.cover,
+                                )
+                                    : CachedNetworkImage(
+                                  imageUrl: imageUrl,
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.cover,
+                                  errorWidget: (context, url, error) {
+                                    return Image.asset(
+                                      AppImages.user,
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                  placeholder: (context, url) {
+                                    return Shimmer.fromColors(
+                                      baseColor: Colors.grey.shade300,
+                                      highlightColor:
+                                      Colors.grey.shade100,
+                                      child: Container(
+                                        width: 120,
+                                        height: 120,
+                                        decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          shape: BoxShape.circle,
                                         ),
-                                      );
-                                    },
-                                  ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: CircleAvatar(
-                            radius: 18,
-                            child: IconButton(
-                              onPressed: () {
-                                ref
-                                    .read(pickImageProvider.notifier)
-                                    .pickImage();
-                              },
-                              icon: SvgPicture.asset(AppIcons.camera),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
                             ),
-                          ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: CircleAvatar(
+                                radius: 18,
+                                child: IconButton(
+                                  onPressed: () {
+                                    ref
+                                        .read(pickImageProvider.notifier)
+                                        .pickImage();
+                                  },
+                                  icon: SvgPicture.asset(AppIcons.camera),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-                CustomTextField(
-                  controller: nameController,
-                  label: "Full Name",
-                  isPassword: false,
-                ),
-                SizedBox(height: 8),
-                CustomTextField(
-                  controller: phoneController,
-                  label: "Phone",
-                  isPassword: false,
-                ),
-                SizedBox(height: 8),
-                CustomTextField(
-                  controller: emailController,
-                  label: "Email",
-                  isPassword: false,
-                ),
-                SizedBox(height: 55),
-                updateState.isLoading? const CircularProgressIndicator():
-                CustomButton(
-                  text: "Save",
-                  onPressed: () async {
-                    final fullName = nameController.text.trim();
+                    CustomTextField(
+                      controller: nameController,
+                      label: "Full Name",
+                      isPassword: false,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return "Name is required";
+                        }
 
-                    final nameParts = fullName.split(" ");
+                        if (value.trim().length < 3) {
+                          return "Enter valid name";
+                        }
 
-                    final firstName = nameParts.first;
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    CustomTextField(
+                      controller: phoneController,
+                      label: "Phone",
+                      isPassword: false,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Phone number is required';
+                        }
 
-                    final lastName = nameParts.length > 1
-                        ? nameParts.sublist(1).join(" ")
-                        : "";
-                    await ref
-                        .read(updateProfileProvider.notifier)
-                        .updateProfile(
+                        if (value.trim().length < 6) {
+                          return 'Enter valid phone number';
+                        }
+
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    CustomTextField(
+                      controller: emailController,
+                      label: "Email",
+                      isPassword: false,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return "Email is required";
+                        }
+
+                        if (!RegExp(
+                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                        ).hasMatch(value.trim())) {
+                          return "Enter valid email";
+                        }
+
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 55),
+                    updateState.isLoading
+                        ? const CircularProgressIndicator()
+                        : CustomButton(
+                      text: "Save",
+                      onPressed: () async {
+                        if (!formKey.currentState!.validate()) {
+                          return;
+                        }
+
+                        final fullName =
+                        nameController.text.trim();
+
+                        final nameParts = fullName.split(" ");
+
+                        final firstName = nameParts.first;
+
+                        final lastName = nameParts.length > 1
+                            ? nameParts
+                            .sublist(1)
+                            .join(" ")
+                            : "";
+
+                        await ref
+                            .read(
+                          updateProfileProvider.notifier,
+                        )
+                            .updateProfile(
                           firstName: firstName,
                           lastName: lastName,
                           image: image,
-                          phone: phoneController.text,
-                          email: emailController.text,
+                          phone: phoneController.text.trim(),
+                          email: emailController.text.trim(),
                         );
-                    ref.invalidate(getProfileProvider);
 
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                    }
-                  },
+                        ref.invalidate(getProfileProvider);
+
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                        }
+                      },
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           );
         },
         loading: () {
           return const PersonalDataShimmer();
         },
-
         error: (error, stack) {
-          return Center(child: Text(error.toString()));
+          return Center(
+            child: Text(error.toString()),
+          );
         },
       ),
     );
